@@ -1,71 +1,56 @@
 {
-  description = "QMK/ZMK compatible keyboards development environment";
+  description = "Tools to build and flash my custom keyboard";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-  };
+  inputs =
+    {
+      nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+      flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus/master";
+      qmk-nix-utils = {
+        url = "github:aciceri/qmk-nix-utils";
+        inputs.nixpkgsUnstable.follows = "nixpkgs";
+      };
+      qmk-firmware-source = {
+        type = "git";
+        url = "https://github.com/qmk/qmk_firmware";
+        flake = false;
+        submodules = true;
+      };
+    };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        qmkHome = "${./.}/qmk_firmware";
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            # QMK dependencies
-            qmk
-            python3
-            python3Packages.pip
-            python3Packages.setuptools
-            avrdude
-            dfu-programmer
-            dfu-util
-            
-            # General development tools
-            git
-            gnumake
-          ];
+  outputs =
+    { self
+    , nixpkgs
+    , flake-utils-plus
+    , qmk-nix-utils
+    , qmk-firmware-source
+    }: flake-utils-plus.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs { inherit system; };
 
-          shellHook = ''
-            export QMK_HOME="${qmkHome}"
-            echo "QMK/ZMK Keyboard Development Environment"
-            echo "======================================="
-            echo "QMK_HOME set to: $QMK_HOME"
-            echo "Available tools:"
-            echo "  - qmk: QMK CLI tool"
-            echo "  - avrdude, dfu-util: Flashing tools"
-            echo ""
-            echo "To get started with QMK:"
-            echo "  qmk setup"
-            echo "  qmk compile -kb <keyboard> -km <keymap>"
+      utils-factory = builtins.getAttr system qmk-nix-utils.utils-factory;
+
+      utils = utils-factory
+        {
+          inherit qmk-firmware-source;
+          src = ./src;
+          keyboard-name = "preonic/rev3_drop";
+          keymap-name = "default";
+          flash-script = ''
+            echo -n "Press the RESET button..."
+            while [ ! -e /dev/ttyACM0 ]
+            do
+              echo -n "."
+              sleep 0.5
+            done
+            ${pkgs.avrdude}/bin/avrdude -p atmega32u4 -c avr109 -P /dev/ttyACM0 -U flash:w:$HEX_FILE
           '';
         };
-
-        packages = {
-          # Example package for building a specific keyboard
-          # Uncomment and modify as needed
-          # my-keyboard = pkgs.stdenv.mkDerivation {
-          #   pname = "my-keyboard";
-          #   version = "1.0.0";
-          #   src = ./.;
-          #   
-          #   buildInputs = with pkgs; [ qmk ];
-          #   
-          #   QMK_HOME = qmkHome;
-          #   
-          #   buildPhase = ''
-          #     qmk compile -kb my_keyboard -km default
-          #   '';
-          #   
-          #   installPhase = ''
-          #     mkdir -p $out
-          #     cp *.hex $out/ || true
-          #     cp *.uf2 $out/ || true
-          #   '';
-          # };
-        };
-      });
+    in
+    {
+      devShell = utils.dev-shell;
+      defaultPackage = utils.hex;
+      defaultApp = utils.flasher;
+      apps.flash = utils.flasher;
+    }
+    );
 }
