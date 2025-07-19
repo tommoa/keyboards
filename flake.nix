@@ -6,7 +6,7 @@
       nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
       flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus/master";
       qmk-nix-utils = {
-        url = "github:aciceri/qmk-nix-utils";
+        url = "github:tommoa/qmk-nix-utils";
         inputs.nixpkgsUnstable.follows = "nixpkgs";
       };
       qmk-firmware-source = {
@@ -33,7 +33,7 @@
         {
           inherit qmk-firmware-source;
           src = ./src;
-          keyboard-name = "preonic/rev3_drop";
+          keyboard-name = "custom_preonic";
           keymap-name = "default";
           flash-script = ''
             echo -n "Press the RESET button..."
@@ -49,7 +49,10 @@
     {
       devShell = utils.dev-shell;
       defaultPackage = utils.hex;
-      defaultApp = utils.flasher;
+      defaultApp = {
+        type = "app";
+        program = "${utils.flasher}/bin/flasher";
+      };
       apps.flash = utils.flasher;
     }
     );

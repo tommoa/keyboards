@@ -23,6 +23,7 @@
 #define AUDIO_PIN A5
 #define AUDIO_PIN_ALT A4
 #define AUDIO_PIN_ALT_AS_NEGATIVE
+#define AUDIO_INIT_DELAY
 
 /*
  * Feature disable options
