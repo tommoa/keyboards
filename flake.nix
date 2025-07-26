@@ -32,17 +32,13 @@
       utils = utils-factory
         {
           inherit qmk-firmware-source;
-          src = ./src;
-          keyboard-name = "custom_preonic";
-          keymap-name = "default";
+          src = ./src/keymaps/tommoa;
+          keyboard-name = "preonic";
+          keyboard-variant = "rev3_drop";
+          keymap-name = "tommoa";
+          type = "keymap";
           flash-script = ''
-            echo -n "Press the RESET button..."
-            while [ ! -e /dev/ttyACM0 ]
-            do
-              echo -n "."
-              sleep 0.5
-            done
-            ${pkgs.avrdude}/bin/avrdude -p atmega32u4 -c avr109 -P /dev/ttyACM0 -U flash:w:$HEX_FILE
+            ${pkgs.qmk}/bin/qmk flash -kb preonic/rev3_drop $BIN_FILE
           '';
         };
     in
