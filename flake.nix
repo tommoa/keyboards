@@ -38,7 +38,7 @@
           keymap-name = "tommoa";
           type = "keymap";
           flash-script = ''
-            ${pkgs.qmk}/bin/qmk flash -kb preonic/rev3_drop $BIN_FILE
+            ${pkgs.dfu-util}/bin/dfu-util -a 0 -s 0x08000000:leave -w -D $BIN_FILE
           '';
         };
     in
