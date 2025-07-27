@@ -27,12 +27,12 @@
     let
       pkgs = import nixpkgs { inherit system; };
 
-      utils-factory = builtins.getAttr system qmk-nix-utils.utils-factory;
+      qmk-utils-factory = builtins.getAttr system qmk-nix-utils.utils-factory;
 
-      utils = utils-factory
+      preonic = qmk-utils-factory
         {
           inherit qmk-firmware-source;
-          src = ./src/keymaps/tommoa;
+          src = ./qmk/preonic;
           keyboard-name = "preonic";
           keyboard-variant = "rev3_drop";
           keymap-name = "tommoa";
@@ -43,13 +43,13 @@
         };
     in
     {
-      devShell = utils.dev-shell;
-      defaultPackage = utils.hex;
+      devShell = preonic.dev-shell;
+      defaultPackage = preonic.hex;
       defaultApp = {
         type = "app";
-        program = "${utils.flasher}/bin/flasher";
+        program = "${preonic.flasher}/bin/flasher";
       };
-      apps.flash = utils.flasher;
+      apps.flash = preonic.flasher;
     }
     );
 }
