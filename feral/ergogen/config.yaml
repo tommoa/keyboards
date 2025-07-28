@@ -1,0 +1,168 @@
+meta:
+  engine: 4.1.0
+units:
+  # Space variables
+  kx: cx
+  ky: cy
+  $default_width: cx
+  $default_height: cy
+  # Padding variables
+  px: kx + 4
+  py: ky + 4
+    # Components
+  xiao_w: 17.5
+  xiao_h: 21
+  bat_plug_w: 7.6
+  bat_plug_h: 5.9
+
+  # Laser cutting
+  kerf: 0.006 * 25.4 # Inches
+points:
+  zones:
+    matrix:
+      # Fix placement in KiCAD
+      anchor.shift: [100, -100]
+      key.padding: 1ky
+      key.spread: 1kx
+      columns:
+        outer:
+          key.column_net: P7
+        pinky.key:
+          stagger: 0.15ky
+          column_net: P8
+        ring.key:
+          stagger: 0.66ky
+          column_net: P10
+        middle.key:
+          stagger: 0.25ky
+          column_net: P6
+        index.key:
+          stagger: -0.25ky
+          column_net: P5
+        inner.key:
+          stagger: -0.15ky
+          column_net: P4
+      rows:
+        bottom.row_net: P3
+        home.row_net: P2
+        top.row_net: P1
+        num.row_net: P0
+    thumb:
+      key.padding: 1ky
+      key.spread: 1kx
+      key.row_net: P7
+      anchor:
+        ref: matrix_index_bottom
+        rotate: -10
+        shift: [0.66kx, -1.40ky]
+      rows.thumb.row_net: P9
+      columns:
+        tucked.key:
+          column_net: P8
+        relaxed.key:
+          column_net: P7
+          spread: kx
+          splay: -15
+          origin: [-0.5kx, -0.5ky]
+outlines:
+  raw:
+    - what: rectangle
+      where: true
+      bound: true
+      size: [px, py]
+  keys:
+    - what: rectangle
+      where: true
+      bound: false
+      size: [kx - 0.5, ky - 0.5]
+  board:
+    - what: polygon
+      points:
+        - ref: matrix_outer_num
+          shift: [-0.5px, 0.5py]
+        - ref: matrix_middle_num
+          shift: [-0.5px, 0.5py]
+        - ref: matrix_middle_num
+          shift: [0, 0.6py]
+        - ref: matrix_middle_num
+          shift: [0.5px, 0.5py]
+        - ref: matrix_inner_num
+          shift: [0.5px, 0.5py]
+        - ref: matrix_inner_top
+          shift: [0.5px, 0.45py]
+        - ref: matrix_inner_top
+          shift: [1.5px, 0.45py]
+        - ref: thumb_relaxed_thumb
+          shift: [1px, -0.3py]
+        - ref: matrix_outer_bottom
+          shift: [-0.5px, -0.5py]
+      fillet: 10
+  switch_holes:
+    - what: rectangle
+      where: true
+      size: [14 - kerf, 14 - kerf]
+  top_plate:
+    - name: board
+    - name: switch_holes
+      operation: subtract
+  combo:
+    - name: board
+    - operation: subtract
+      name: keys
+pcbs:
+  feral:
+    outlines.feral.outline: board
+    footprints:
+      choc_hotswap:
+        what: choc
+        where: true
+        params:
+          keycaps: true
+          hotswap: true
+          reverse: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+      diode:
+        what: diode
+        where: true
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+      seeed:
+        what: seeed_xiao
+        params:
+          smd_cutouts: true
+        where:
+          ref: matrix_inner_top
+          shift: [1.2 * kx, -3]
+          rotate: 0
+      reset:
+        what: button_side_push
+        params:
+          from: GND
+          to: RST
+          side: B
+        where.$extends: pcbs.feral.footprints.seeed.where
+        adjust.shift: [xiao_w/2, -xiao_h/2 - 5]
+        adjust.rotate: -90
+      power_sw:
+        what: slider
+        where.$extends: pcbs.feral.footprints.seeed.where
+        adjust.shift: [xiao_w/2, -xiao_h/2 - 15]
+        adjust.rotate: -90
+        params:
+          side: B
+          from: "BAT+"
+          to: BAT_POS
+      battery:
+        what: jstph
+        where:
+          $extends: pcbs.feral.footprints.seeed.where
+          rotate: 90
+        adjust.shift: [-xiao_h/2 - bat_plug_h/2 - 0.5, xiao_w/2 + 0.5]
+        params:
+          pos: BAT_POS
+          neg: GND
+cases:
