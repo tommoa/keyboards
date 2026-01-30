@@ -16,6 +16,10 @@
 
 #pragma once
 
+// Decrease the tapping term.
+// I find the default to take too long when accessing symbols.
+#define TAPPING_TERM 175
+
 #ifdef AUDIO_ENABLE
 #    define STARTUP_SONG SONG(PREONIC_SOUND)
 // #define STARTUP_SONG SONG(NO_SOUND)

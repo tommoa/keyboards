@@ -21,6 +21,7 @@ enum preonic_layers {
   _QWERTY,
   _COLEMAK,
   _GAMING,
+  _QWERTY_IN_COLEMAK,
   _LOWER,
   _RAISE,
 };
@@ -34,6 +35,7 @@ enum preonic_keycodes {
 #define QWERTY PDF(_QWERTY)
 #define COLEMAK PDF(_COLEMAK)
 #define GAMING DF(_GAMING)
+#define Q_IN_C DF(_QWERTY_IN_COLEMAK)
 #define SP_RAISE LT(_RAISE, KC_SPC)
 #define TB_LOWER LT(_LOWER, KC_TAB)
 
@@ -102,6 +104,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_LCTL, XXXXXXX, XXXXXXX, XXXXXXX, KC_SPC,  KC_SPC, KC_SPC,  RAISE, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
+/* Qwerty in Colemak
+ * ,-----------------------------------------------------------------------------------.
+ * |   `  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  | Bksp |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Tab  |   Q  |   W  |   K  |   S  |   F  |   O  |   I  |   L  |   ;  |   R  | Del  |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * | Esc  |   A  |   D  |   G  |   E  |   T  |   H  |   Y  |   N  |   U  |   P  |  "   |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * | Shift|   Z  |   X  |   C  |   V  |   B  |   J  |   M  |   ,  |   .  |   /  |Enter |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Ctrl |      |      |      | Space|    Space    |Raise | Left | Down |  Up  |Right |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_QWERTY_IN_COLEMAK] = LAYOUT_preonic_grid(
+  KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,    KC_BSPC,
+  KC_TAB,         KC_Q,    KC_W,    KC_K,         KC_S,         KC_F,     KC_O,     KC_I,         KC_L,         KC_SCLN, KC_R,    RGUI_T(KC_BSLS),
+  LALT_T(KC_ESC), KC_A,    KC_D,    LCTL_T(KC_G), LGUI_T(KC_E), KC_T,     KC_H,     LGUI_T(KC_Y), LCTL_T(KC_N), KC_U,    KC_P,    LALT_T(KC_QUOT),
+  KC_LSFT,        KC_Z,    KC_X,    KC_C,         KC_V,         KC_B,     KC_J,     KC_M,         KC_COMM,      KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
+  KC_LCTL,        KC_LCTL, KC_LALT, KC_LGUI,      TB_LOWER,     SP_RAISE, SP_RAISE, SP_RAISE,     KC_LEFT,      KC_DOWN, KC_UP,   KC_RGHT
+),
+
 /* Lower
  * ,-----------------------------------------------------------------------------------.
  * |   ~  |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |  F7  |  F8  |  F9  |  F10 | F11  |
@@ -125,7 +148,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Raise
  * ,-----------------------------------------------------------------------------------.
- * |      |Qwerty|Colemk|Gaming|AudOff|Aud on|Voice-|Voice+|Aud cy|Mus on|MusOff| Reset|
+ * |Q_in_C|Qwerty|Colemk|Gaming|AudOff|Aud on|Voice-|Voice+|Aud cy|Mus on|MusOff| Reset|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |      |      |PrevTb|NextTb|      |      | Debug|
  * |------+------+------+------+------+-------------+------+------+------+------+------|
@@ -137,7 +160,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_preonic_grid(
-  XXXXXXX, QWERTY,  COLEMAK, GAMING,  AU_OFF,    AU_ON, AU_PREV, AU_NEXT,     MU_NEXT,  MU_ON,    MU_OFF,  QK_BOOT,
+  Q_IN_C,  QWERTY,  COLEMAK, GAMING,  AU_OFF,    AU_ON, AU_PREV, AU_NEXT,     MU_NEXT,  MU_ON,    MU_OFF,  QK_BOOT,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, C(S(KC_TAB)),C(KC_TAB),XXXXXXX,  XXXXXXX, DB_TOGG,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LEFT, KC_DOWN,     KC_UP,    KC_RGHT,  XXXXXXX, XXXXXXX,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PGDN,     KC_PGUP,  XXXXXXX,  XXXXXXX, XXXXXXX,
