@@ -133,38 +133,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * | Del  |   ^  |   &  |   *  |   (  |   )  |   4  |   5  |   6  |   +  |   *  |  \   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |   [  |   ]  |   {  |   }  |   1  |   2  |   3  |   .  |   =  |  0   |
- * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      | Next | Vol- | Vol+ | Play |
+ * |      |      |   [  |   ]  |   {  |   }  |   1  |   2  |   3  |   .  |   =  | Next |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |             |  0   | Mute | Vol- | Vol+ | Play |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = LAYOUT_preonic_grid(
-  KC_TILD, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,     KC_F8,   KC_F9,   KC_F10,  KC_F11,
-  KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_DOT,  KC_7,      KC_8,    KC_9,    XXXXXXX, KC_F12,
-  KC_DEL,  KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS, KC_4,      KC_5,    KC_6,    XXXXXXX, KC_BSLS,
-  _______, KC_BSLS, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, KC_EQL,  KC_1,      KC_2,    KC_3,    KC_EQL,  KC_0,
-  _______, _______, _______, _______, _______, _______, _______, KC_0,      KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
+  KC_TILD, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
+  KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_DOT,  KC_7,    KC_8,    KC_9,    XXXXXXX, KC_F12,
+  KC_DEL,  KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_MINS, KC_4,    KC_5,    KC_6,    XXXXXXX, KC_BSLS,
+  _______, KC_BSLS, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, KC_EQL,  KC_1,    KC_2,    KC_3,    KC_EQL,  KC_MNXT,
+  _______, _______, _______, _______, _______, _______, _______, KC_0,    KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY
 ),
 
 /* Raise
  * ,-----------------------------------------------------------------------------------.
  * |Q_in_C|Qwerty|Colemk|Gaming|AudOff|Aud on|Voice-|Voice+|Aud cy|Mus on|MusOff| Reset|
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |PrevTb|NextTb|      |      | Debug|
+ * |      |      |      | Bri- | Bri+ |      |      |PrevTb|NextTb|      |      | Debug|
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |      |      |      | Left | Down |  Up  | Right|      |      |
+ * |      |      | Prev | Play | Next |      | Left | Down |  Up  | Right|      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      | Pg Up| Pg Dn|      |
- * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      | Next | Vol- | Vol+ | Play |
+ * |      |      |      |      |      |      | Home | Pg Dn| Pg Up| End  |      | Next |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * |      |      |      |      |      |             |      | Mute | Vol- | Vol+ | Play |
  * `-----------------------------------------------------------------------------------'
  */
 [_RAISE] = LAYOUT_preonic_grid(
-  Q_IN_C,  QWERTY,  COLEMAK, GAMING,  AU_OFF,    AU_ON, AU_PREV, AU_NEXT,     MU_NEXT,  MU_ON,    MU_OFF,  QK_BOOT,
-  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, C(S(KC_TAB)),C(KC_TAB),XXXXXXX,  XXXXXXX, DB_TOGG,
-  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LEFT, KC_DOWN,     KC_UP,    KC_RGHT,  XXXXXXX, XXXXXXX,
-  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PGDN,     KC_PGUP,  XXXXXXX,  XXXXXXX, XXXXXXX,
-  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_MNXT,  KC_VOLD,  KC_VOLU, KC_MPLY
+  Q_IN_C,  QWERTY,  COLEMAK, GAMING,  AU_OFF,  AU_ON,   AU_PREV, AU_NEXT,     MU_NEXT,  MU_ON,   MU_OFF,  QK_BOOT,
+  XXXXXXX, XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, XXXXXXX, C(S(KC_TAB)),C(KC_TAB),XXXXXXX, XXXXXXX, DB_TOGG,
+  XXXXXXX, XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, XXXXXXX, KC_LEFT, KC_DOWN,     KC_UP,    KC_RGHT, XXXXXXX, XXXXXXX,
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_HOME, KC_PGDN,     KC_PGUP,  KC_END,  XXXXXXX, KC_MNXT,
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_MUTE,  KC_VOLD, KC_VOLU, KC_MPLY
 )
 
 };
