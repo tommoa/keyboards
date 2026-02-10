@@ -1,0 +1,42 @@
+/*
+ * Shared keymap definitions for all keyboards.
+ *
+ * Board-specific .keymap files must define KEYS_L, KEYS_R, and THUMBS
+ * (key position index lists) before including this file.
+ *
+ * Features without ZMK equivalents (from QMK):
+ *   - Audio/Piezo, Muse mode -- ZMK has no audio driver
+ *   - NKRO toggle -- ZMK uses NKRO by default over USB
+ *   - MIDI -- not supported in ZMK
+ *   - &bootloader -- known broken on STM32F303 (ZMK #1086)
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+
+#define QWERTY  0
+#define COLEMAK 1
+#define GAMING  2
+#define Q_IN_C  3
+#define LOWER   4
+#define RAISE   5
+
+/ {
+    behaviors {
+        hml: home_row_mod_left {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <175>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+        };
+
+        hmr: home_row_mod_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <175>;
+            flavor = "balanced";
+            bindings = <&kp>, <&kp>;
+        };
+    };
+};
