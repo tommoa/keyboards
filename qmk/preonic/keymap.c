@@ -17,6 +17,12 @@
 #include QMK_KEYBOARD_H
 #include "muse.h"
 
+#ifdef AUDIO_ENABLE
+// Ascending pair = NKRO enabled, descending = NKRO disabled (6KRO)
+float nkro_on_song[][2]  = SONG(E__NOTE(_A5), E__NOTE(_E6));
+float nkro_off_song[][2] = SONG(E__NOTE(_E6), E__NOTE(_A5));
+#endif
+
 enum preonic_layers {
   _QWERTY,
   _COLEMAK,
@@ -161,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_RAISE] = LAYOUT_preonic_grid(
   Q_IN_C,  QWERTY,  COLEMAK, GAMING,  AU_OFF,  AU_ON,   AU_PREV, AU_NEXT,     MU_NEXT,  MU_ON,   MU_OFF,  QK_BOOT,
-  XXXXXXX, XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, XXXXXXX, C(S(KC_TAB)),C(KC_TAB),XXXXXXX, XXXXXXX, DB_TOGG,
+  NK_TOGG, XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU, XXXXXXX, XXXXXXX, C(S(KC_TAB)),C(KC_TAB),XXXXXXX, XXXXXXX, DB_TOGG,
   XXXXXXX, XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, XXXXXXX, KC_LEFT, KC_DOWN,     KC_UP,    KC_RGHT, XXXXXXX, XXXXXXX,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_HOME, KC_PGDN,     KC_PGUP,  KC_END,  XXXXXXX, KC_MNXT,
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_MUTE,  KC_VOLD, KC_VOLU, KC_MPLY
@@ -179,6 +185,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
       } break;
+#ifdef AUDIO_ENABLE
+      // Play a chime when toggling NKRO. This runs BEFORE process_magic
+      // flips keymap_config.nkro, so the state is inverted here.
+      case NK_TOGG:
+        if (record->event.pressed) {
+          if (keymap_config.nkro) {
+            // Currently NKRO, about to become 6KRO
+            PLAY_SONG(nkro_off_song);
+          } else {
+            // Currently 6KRO, about to become NKRO
+            PLAY_SONG(nkro_on_song);
+          }
+        }
+        return true; // let process_magic handle the actual toggle
+      case NK_ON:
+        if (record->event.pressed) {
+          PLAY_SONG(nkro_on_song);
+        }
+        return true;
+      case NK_OFF:
+        if (record->event.pressed) {
+          PLAY_SONG(nkro_off_song);
+        }
+        return true;
+#endif
     }
     return true;
 };
