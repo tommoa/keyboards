@@ -83,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_COLEMAK] = LAYOUT_preonic_grid(
   KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,    KC_BSPC,
-  KC_TAB,         KC_Q,    KC_W,    KC_F,         KC_P,         KC_G,     KC_J,     KC_L,         KC_U,         KC_Y,    KC_SCLN, RGUI_T(KC_BSLS),
+  KC_TAB,         KC_Q,    KC_W,    KC_F,         KC_P,         KC_G,     KC_J,     KC_L,         KC_U,         KC_Y,    KC_SCLN, RGUI_T(KC_DEL),
   LALT_T(KC_ESC), KC_A,    KC_R,    LCTL_T(KC_S), LGUI_T(KC_T), KC_D,     KC_H,     LGUI_T(KC_N), LCTL_T(KC_E), KC_I,    KC_O,    LALT_T(KC_QUOT),
   KC_LSFT,        KC_Z,    KC_X,    KC_C,         KC_V,         KC_B,     KC_K,     KC_M,         KC_COMM,      KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
   KC_LCTL,        KC_LCTL, KC_LALT, KC_LGUI,      TB_LOWER,     SP_RAISE, SP_RAISE, SP_RAISE,     KC_LEFT,      KC_DOWN, KC_UP,   KC_RGHT
@@ -125,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_QWERTY_IN_COLEMAK] = LAYOUT_preonic_grid(
   KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,    KC_BSPC,
-  KC_TAB,         KC_Q,    KC_W,    KC_K,         KC_S,         KC_F,     KC_O,     KC_I,         KC_L,         KC_SCLN, KC_R,    RGUI_T(KC_BSLS),
+  KC_TAB,         KC_Q,    KC_W,    KC_K,         KC_S,         KC_F,     KC_O,     KC_I,         KC_L,         KC_SCLN, KC_R,    RGUI_T(KC_DEL),
   LALT_T(KC_ESC), KC_A,    KC_D,    LCTL_T(KC_G), LGUI_T(KC_E), KC_T,     KC_H,     LGUI_T(KC_Y), LCTL_T(KC_N), KC_U,    KC_P,    LALT_T(KC_QUOT),
   KC_LSFT,        KC_Z,    KC_X,    KC_C,         KC_V,         KC_B,     KC_J,     KC_M,         KC_COMM,      KC_DOT,  KC_SLSH, RSFT_T(KC_ENT),
   KC_LCTL,        KC_LCTL, KC_LALT, KC_LGUI,      TB_LOWER,     SP_RAISE, SP_RAISE, SP_RAISE,     KC_LEFT,      KC_DOWN, KC_UP,   KC_RGHT
