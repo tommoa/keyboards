@@ -5,8 +5,27 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  discover:
     runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.discover.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Discover firmware packages
+        id: discover
+        run: |
+          pkgs=$(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -c '[.[] | select(test("-(qmk|zmk)$"))]')
+          echo "packages=$pkgs" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.discover.outputs.packages) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -14,17 +33,16 @@ jobs:
 
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Build all firmware
+      - name: Build ${{ matrix.package }}
+        run: nix build .#${{ matrix.package }}
+
+      - name: Collect firmware
         run: |
           mkdir -p firmware
-          for pkg in $(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -r \
-            '.[] | select(test("-(qmk|zmk)$"))'); do
-            out="$(nix build ".#$pkg" --print-out-paths)"
-            cp "$out"/*.bin "firmware/$pkg.bin" 2>/dev/null || true
-            cp "$out"/*.hex "firmware/$pkg.hex" 2>/dev/null || true
-          done
+          cp result/*.bin firmware/${{ matrix.package }}.bin 2>/dev/null || true
+          cp result/*.hex firmware/${{ matrix.package }}.hex 2>/dev/null || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: firmware
+          name: ${{ matrix.package }}
           path: firmware
