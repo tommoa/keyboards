@@ -83,20 +83,28 @@
         devShells.zmk = zmk-nix.devShells.${system}.default;
 
         packages.default = preonic-qmk.hex;
-        packages.zmk = preonic-zmk;
+        packages.preonic-qmk = preonic-qmk.hex;
+        packages.preonic-zmk = preonic-zmk;
 
         apps.default = {
           type = "app";
           program = "${preonic-qmk.flasher}/bin/flasher";
         };
-        apps.flash = preonic-qmk.flasher;
+        apps.flash = {
+          type = "app";
+          program = "${preonic-qmk.flasher}/bin/flasher";
+        };
         apps.zmk-flash = {
           type = "app";
           program = "${zmk-flasher}/bin/zmk-flash";
         };
         apps.zmk-update = {
           type = "app";
-          program = "${zmk-nix.packages.${system}.update}/bin/update";
+          program = "${pkgs.writeShellScript "zmk-update" ''
+            export UPDATE_NIX_ATTR_PATH=preonic-zmk
+            export UPDATE_WEST_ROOT=zmk/preonic
+            exec ${zmk-nix.packages.${system}.update}/bin/update "$@"
+          ''}";
         };
       }
     );
