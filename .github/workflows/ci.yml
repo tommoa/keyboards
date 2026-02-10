@@ -38,11 +38,15 @@ jobs:
 
       - name: Collect firmware
         run: |
-          mkdir -p firmware
-          cp result/*.bin firmware/${{ matrix.package }}.bin 2>/dev/null || true
-          cp result/*.hex firmware/${{ matrix.package }}.hex 2>/dev/null || true
+          cp result/*.bin ${{ matrix.package }}.bin 2>/dev/null || true
+          cp result/*.hex ${{ matrix.package }}.hex 2>/dev/null || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.package }}
-          path: firmware
+          name: ${{ matrix.package }}.bin
+          path: ${{ matrix.package }}.bin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}.hex
+          path: ${{ matrix.package }}.hex
