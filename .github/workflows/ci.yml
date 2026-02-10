@@ -1,0 +1,30 @@
+name: Build firmware
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build all firmware
+        run: |
+          mkdir -p firmware
+          for pkg in $(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -r \
+            '.[] | select(test("-(qmk|zmk)$"))'); do
+            out="$(nix build ".#$pkg" --print-out-paths)"
+            cp "$out"/*.bin "firmware/$pkg.bin" 2>/dev/null || true
+            cp "$out"/*.hex "firmware/$pkg.hex" 2>/dev/null || true
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: firmware
