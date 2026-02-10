@@ -10,6 +10,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
     steps:
       - name: Checkout
@@ -69,3 +70,9 @@ jobs:
           and zephyrDepsHash."
 
           git push origin master
+
+      - name: Trigger CI
+        if: steps.changes.outputs.changed == 'true'
+        run: gh workflow run ci.yml --ref master
+        env:
+          GH_TOKEN: ${{ github.token }}
