@@ -68,7 +68,7 @@
           installPhase = ''
             runHook preInstall
             mkdir $out
-            cp zephyr/zmk.bin $out/
+            cp zephyr/zmk.bin zephyr/zmk.hex $out/
             runHook postInstall
           '';
           meta = {
