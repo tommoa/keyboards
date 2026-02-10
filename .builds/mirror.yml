@@ -12,4 +12,5 @@ tasks:
       echo "StrictHostKeyChecking=no" >> ~/.ssh/config
       cd keyboards
       git remote add github "$github"
-      git push -f github "$branch"
+      git pull --rebase github "$branch" || (git rebase --abort 2>/dev/null; git pull --ff-only github "$branch")
+      git push github "$branch"
