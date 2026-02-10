@@ -1,0 +1,20 @@
+image: nixos/unstable
+packages:
+  - nixos.jq
+sources:
+  - https://git.sr.ht/~tommoa/keyboards
+environment:
+  NIX_CONFIG: "experimental-features = nix-command flakes"
+artifacts:
+  - keyboards/firmware.tar.gz
+tasks:
+  - build: |
+      cd keyboards
+      mkdir -p firmware
+      for pkg in $(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -r \
+        '.[] | select(test("-(qmk|zmk)$"))'); do
+        out="$(nix build ".#$pkg" --print-out-paths)"
+        cp "$out"/*.bin "firmware/$pkg.bin" 2>/dev/null || true
+        cp "$out"/*.hex "firmware/$pkg.hex" 2>/dev/null || true
+      done
+      tar czf firmware.tar.gz firmware/

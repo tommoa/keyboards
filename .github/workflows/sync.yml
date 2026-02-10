@@ -1,0 +1,24 @@
+name: Mirror branch to sourcehut
+on:
+  push:
+    branches:
+      - master
+concurrency:
+  group: sync-to-sourcehut
+  cancel-in-progress: false
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to sourcehut
+        run: |
+          mkdir -p ~/.ssh
+          echo "StrictHostKeyChecking=no" >> ~/.ssh/config
+          echo "${{ secrets.SRHT_DEPLOY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          git remote add srht "git@git.sr.ht:~tommoa/keyboards"
+          git pull --rebase srht master || (git rebase --abort 2>/dev/null; git pull --ff-only srht master)
+          git push srht master
