@@ -103,7 +103,7 @@
           program = "${pkgs.writeShellScript "zmk-update" ''
             export UPDATE_NIX_ATTR_PATH=preonic-zmk
             export UPDATE_WEST_ROOT=zmk/preonic
-            exec ${zmk-nix.packages.${system}.update}/bin/update "$@"
+            exec ${zmk-nix.packages.${system}.update}/bin/zmk-firmware-update "$@"
           ''}";
         };
       }
