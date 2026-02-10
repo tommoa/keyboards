@@ -20,6 +20,10 @@
 // I find the default to take too long when accessing symbols.
 #define TAPPING_TERM 175
 
+// KVM compatibility: some KVMs can't supply 500mA per port.
+// 100mA is sufficient for a keyboard without backlighting.
+#define USB_MAX_POWER_CONSUMPTION 100
+
 #ifdef AUDIO_ENABLE
 #    define STARTUP_SONG SONG(PREONIC_SOUND)
 // #define STARTUP_SONG SONG(NO_SOUND)
