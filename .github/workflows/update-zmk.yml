@@ -65,3 +65,8 @@ jobs:
         run: gh workflow run ci.yml --ref master
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Trigger sourcehut sync
+        if: steps.changes.outputs.changed == 'true'
+        run: gh workflow run sync.yml --ref master
+        env:
+          GH_TOKEN: ${{ github.token }}
