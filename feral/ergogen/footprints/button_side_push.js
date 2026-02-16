@@ -3,14 +3,14 @@
  */
 
 module.exports = {
-    params: {
-        designator: 'B', // for Button
-        side: 'F',
-        from: undefined,
-        to: undefined
-    },
-    body: p => {
-      return `
+  params: {
+    designator: "B", // for Button
+    side: "F",
+    from: undefined,
+    to: undefined,
+  },
+  body: (p) => {
+    return `
       (module Panasonic_EVQPUL_EVQPUC (layer ${p.side}.Cu) (tedit 5A02FC95)
         (descr http://industrial.panasonic.com/cdbs/www-data/pdf/ATV0000/ATV0000CE5.pdf)
         (tags "SMD SMT SPST EVQPUL EVQPUC")
@@ -18,7 +18,7 @@ module.exports = {
 
         ${p.at /* parametric position */}
 
-        ${'' /* footprint reference */}
+        ${"" /* footprint reference */}
         (fp_text reference "${p.ref}" (at 0 -3.2) (layer ${p.side}.SilkS) ${p.ref_hide}
             (effects (font (size 1 1) (thickness 0.15)))
         )
@@ -46,6 +46,6 @@ module.exports = {
         (pad "" np_thru_hole circle (at 0 1.375 180) (size 0.75 0.75) (drill 0.75) (layers *.Cu *.Mask))
         (pad "" np_thru_hole circle (at 0 -1.375 180) (size 0.75 0.75) (drill 0.75) (layers *.Cu *.Mask))
       )
-      `
-    }
-}
+      `;
+  },
+};

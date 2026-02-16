@@ -1,9 +1,7 @@
 name: Build firmware
-
 on:
   push:
     branches: [master]
-
 jobs:
   discover:
     runs-on: ubuntu-latest
@@ -11,15 +9,12 @@ jobs:
       packages: ${{ steps.discover.outputs.packages }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: DeterminateSystems/nix-installer-action@main
-
       - name: Discover firmware packages
         id: discover
         run: |
           pkgs=$(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -c '[.[] | select(test("-(qmk|zmk)$"))]')
           echo "packages=$pkgs" >> "$GITHUB_OUTPUT"
-
   build:
     needs: discover
     runs-on: ubuntu-latest
@@ -28,24 +23,18 @@ jobs:
         package: ${{ fromJSON(needs.discover.outputs.packages) }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: DeterminateSystems/nix-installer-action@main
-
       - uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: Build ${{ matrix.package }}
         run: nix build .#${{ matrix.package }}
-
       - name: Collect firmware
         run: |
           cp result/*.bin ${{ matrix.package }}.bin 2>/dev/null || true
           cp result/*.hex ${{ matrix.package }}.hex 2>/dev/null || true
-
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}.bin
           path: ${{ matrix.package }}.bin
-
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}.hex

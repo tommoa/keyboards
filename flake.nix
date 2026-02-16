@@ -18,6 +18,10 @@
       url = "github:lilyinstarlight/zmk-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -28,11 +32,14 @@
       qmk-nix-utils,
       qmk-firmware-source,
       zmk-nix,
+      treefmt-nix,
     }:
     flake-utils-plus.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
+
+        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
 
         qmk-utils-factory = builtins.getAttr system qmk-nix-utils.utils-factory;
 
@@ -79,8 +86,23 @@
         };
       in
       {
-        devShells.default = preonic-qmk.dev-shell;
-        devShells.zmk = zmk-nix.devShells.${system}.default;
+        devShells.default = pkgs.mkShell {
+          inputsFrom = [ preonic-qmk.dev-shell ];
+          packages = [
+            treefmtEval.config.build.wrapper
+          ]
+          ++ builtins.attrValues treefmtEval.config.build.programs;
+        };
+        devShells.zmk = pkgs.mkShell {
+          inputsFrom = [ zmk-nix.devShells.${system}.default ];
+          packages = [
+            treefmtEval.config.build.wrapper
+          ]
+          ++ builtins.attrValues treefmtEval.config.build.programs;
+        };
+
+        formatter = treefmtEval.config.build.wrapper;
+        checks.formatting = treefmtEval.config.build.check self;
 
         packages.default = preonic-qmk.hex;
         packages.preonic-qmk = preonic-qmk.hex;
@@ -90,15 +112,15 @@
           type = "app";
           program = "${preonic-qmk.flasher}/bin/flasher";
         };
-        apps.flash = {
+        apps.preonic-qmk-flash = {
           type = "app";
           program = "${preonic-qmk.flasher}/bin/flasher";
         };
-        apps.zmk-flash = {
+        apps.preonic-zmk-flash = {
           type = "app";
           program = "${zmk-flasher}/bin/zmk-flash";
         };
-        apps.zmk-update = {
+        apps.preonic-zmk-update = {
           type = "app";
           program = "${pkgs.writeShellScript "zmk-update" ''
             export UPDATE_NIX_ATTR_PATH=preonic-zmk
