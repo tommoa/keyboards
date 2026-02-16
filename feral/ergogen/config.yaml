@@ -8,7 +8,8 @@ units:
   $default_height: cy
   # Padding variables
   px: kx + 4
-  py: ky + 4
+  py:
+    ky + 4
     # Components
   xiao_w: 17.5
   xiao_h: 21

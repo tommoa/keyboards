@@ -1,11 +1,9 @@
 name: Update ZMK dependencies
-
 on:
   schedule:
     # Weekly on Monday at 06:00 UTC
     - cron: "0 6 * * 1"
   workflow_dispatch: # Allow manual trigger
-
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -17,19 +15,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: master
-
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
-
       - name: Cache Nix store
         uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: Update zmk-nix flake input
         run: nix flake update zmk-nix
-
       - name: Update west.yml pins and zephyrDepsHash
         run: nix run .#zmk-update
-
       - name: Check for changes
         id: changes
         run: |
@@ -38,7 +31,6 @@ jobs:
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Build all ZMK firmware
         if: steps.changes.outputs.changed == 'true'
         run: |
@@ -49,14 +41,12 @@ jobs:
             cp "$out"/*.bin "firmware/$pkg.bin" 2>/dev/null || true
             cp "$out"/*.hex "firmware/$pkg.hex" 2>/dev/null || true
           done
-
       - name: Upload firmware artifacts
         if: steps.changes.outputs.changed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: zmk_firmware
           path: firmware
-
       - name: Commit and push
         if: steps.changes.outputs.changed == 'true'
         run: |
@@ -70,7 +60,6 @@ jobs:
           and zephyrDepsHash."
 
           git push origin master
-
       - name: Trigger CI
         if: steps.changes.outputs.changed == 'true'
         run: gh workflow run ci.yml --ref master
