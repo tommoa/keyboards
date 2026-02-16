@@ -214,6 +214,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 };
 
+void keyboard_post_init_user(void) {
+    // KVM compatibility: always boot in 6KRO mode regardless of EEPROM state.
+    // The ConnectPro UDP-12AP KVM won't enumerate NKRO keyboards on its
+    // dedicated HID port. NK_TOGG can still enable NKRO during a session.
+    keymap_config.nkro = false;
+}
+
 bool muse_mode = false;
 uint8_t last_muse_note = 0;
 uint16_t muse_counter = 0;
