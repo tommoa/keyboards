@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 concurrency:
   group: sync-to-sourcehut
   cancel-in-progress: false
