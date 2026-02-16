@@ -22,7 +22,7 @@ jobs:
       - name: Update zmk-nix flake input
         run: nix flake update zmk-nix
       - name: Update west.yml pins and zephyrDepsHash
-        run: nix run .#zmk-update
+        run: nix run .#preonic-zmk-update
       - name: Check for changes
         id: changes
         run: |
