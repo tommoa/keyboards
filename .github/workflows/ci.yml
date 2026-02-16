@@ -2,6 +2,7 @@ name: Build firmware
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 jobs:
   discover:
     runs-on: ubuntu-latest
