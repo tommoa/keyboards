@@ -69,7 +69,7 @@
           ];
           board = "preonic//zmk";
           config = "preonic/config";
-          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          zephyrDepsHash = "sha256-gsJ17xtoonTMumYhlhsOxItdBhzUXd4gNCyhOY2+IK8=";
           # The Preonic rev3 Drop uses STM32 DFU, not UF2 bootloader,
           # so the build produces .bin/.hex instead of .uf2.
           installPhase = ''
