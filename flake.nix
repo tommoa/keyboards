@@ -2,6 +2,7 @@
   description = "Tools to build and flash my custom keyboard";
 
   inputs = {
+    annepro2Tools.url = "github:OpenAnnePro/AnnePro2-Tools";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus/master";
     qmk-nix-utils = {
@@ -27,6 +28,7 @@
   outputs =
     {
       self,
+      annepro2Tools,
       nixpkgs,
       flake-utils-plus,
       qmk-nix-utils,
@@ -52,6 +54,18 @@
           type = "keymap";
           flash-script = ''
             ${pkgs.dfu-util}/bin/dfu-util -a 0 -s 0x08000000:leave -w -D $BIN_FILE
+          '';
+        };
+
+        annepro2-qmk = qmk-utils-factory {
+          inherit qmk-firmware-source;
+          src = ./qmk/annepro2;
+          keyboard-name = "annepro2";
+          keyboard-variant = "c18";
+          keymap-name = "tommoa";
+          type = "keymap";
+          flash-script = ''
+            ${annepro2Tools.packages.${system}."annepro2-tools"}/bin/annepro2_tools --boot $BIN_FILE
           '';
         };
 
@@ -105,6 +119,7 @@
         checks.formatting = treefmtEval.config.build.check self;
 
         packages.default = preonic-qmk.hex;
+        packages.annepro2-qmk = annepro2-qmk.hex;
         packages.preonic-qmk = preonic-qmk.hex;
         packages.preonic-zmk = preonic-zmk;
 
@@ -115,6 +130,10 @@
         apps.preonic-qmk-flash = {
           type = "app";
           program = "${preonic-qmk.flasher}/bin/flasher";
+        };
+        apps.annepro2-qmk-flash = {
+          type = "app";
+          program = "${annepro2-qmk.flasher}/bin/flasher";
         };
         apps.preonic-zmk-flash = {
           type = "app";

@@ -1,5 +1,24 @@
 {
   "nodes": {
+    "annepro2Tools": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1756229922,
+        "narHash": "sha256-7zYXsh4p/Ys6e970Tquwvxs8/mL3ZN0xvGtJyAItl9Y=",
+        "owner": "OpenAnnePro",
+        "repo": "AnnePro2-Tools",
+        "rev": "a13b82c362e928f4f867cb47d3644e07768b40a8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "OpenAnnePro",
+        "repo": "AnnePro2-Tools",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
@@ -131,6 +150,7 @@
     },
     "root": {
       "inputs": {
+        "annepro2Tools": "annepro2Tools",
         "flake-utils-plus": "flake-utils-plus",
         "nixpkgs": "nixpkgs",
         "qmk-firmware-source": "qmk-firmware-source",
