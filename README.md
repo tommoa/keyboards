@@ -5,7 +5,7 @@ Custom keyboard firmware and hardware, built with Nix.
 | Keyboard | Firmware | MCU | Status |
 |---|---|---|---|
 | [Preonic rev3 Drop](https://drop.com/buy/preonic-mechanical-keyboard) | QMK, ZMK | STM32F303 | Active |
-| Feral (custom split) | -- | Seeed XIAO BLE | PCB design phase |
+| Feral (custom split) | ZMK | 2x Seeed XIAO BLE | Bring-up complete |
 
 Source lives on [sourcehut](https://git.sr.ht/~tommoa/keyboards),
 mirrored to [GitHub](https://github.com/tommoa/keyboards).

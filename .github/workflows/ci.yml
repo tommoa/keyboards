@@ -14,7 +14,7 @@ jobs:
       - name: Discover firmware packages
         id: discover
         run: |
-          pkgs=$(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -c '[.[] | select(test("-(qmk|zmk)$"))]')
+          pkgs=$(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -c '[.[] | select(test("-(qmk|zmk)(-.+)?$"))]')
           echo "packages=$pkgs" >> "$GITHUB_OUTPUT"
   build:
     needs: discover
@@ -30,13 +30,12 @@ jobs:
         run: nix build .#${{ matrix.package }}
       - name: Collect firmware
         run: |
-          cp result/*.bin ${{ matrix.package }}.bin 2>/dev/null || true
-          cp result/*.hex ${{ matrix.package }}.hex 2>/dev/null || true
+          mkdir -p firmware
+          cp result/*.bin firmware/${{ matrix.package }}.bin 2>/dev/null || true
+          cp result/*.hex firmware/${{ matrix.package }}.hex 2>/dev/null || true
+          cp result/*.uf2 firmware/${{ matrix.package }}.uf2 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.package }}.bin
-          path: ${{ matrix.package }}.bin
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.package }}.hex
-          path: ${{ matrix.package }}.hex
+          name: ${{ matrix.package }}
+          path: firmware/
+          if-no-files-found: error
