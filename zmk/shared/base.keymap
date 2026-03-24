@@ -27,6 +27,7 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             tapping-term-ms = <175>;
+            quick-tap-ms = <250>;
             flavor = "balanced";
             bindings = <&kp>, <&kp>;
         };
@@ -35,8 +36,26 @@
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             tapping-term-ms = <175>;
+            quick-tap-ms = <250>;
             flavor = "balanced";
             bindings = <&kp>, <&kp>;
         };
+
+        thl: thumb_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <250>;
+            flavor = "tap-preferred";
+            bindings = <&mo>, <&kp>;
+        };
     };
+};
+
+&mt {
+    quick-tap-ms = <250>;
+};
+
+&lt {
+    quick-tap-ms = <250>;
 };

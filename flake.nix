@@ -98,6 +98,124 @@
             platforms = nixpkgs.lib.platforms.all;
           };
         };
+
+        feral-zmk-src = ./zmk;
+
+        feral-zmk = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk";
+          src = feral-zmk-src;
+          board = "xiao_ble";
+          shield = "feral";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "ZMK firmware for Feral";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-zmk-left = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk-left";
+          src = feral-zmk-src;
+          board = "xiao_ble";
+          shield = "feral_left";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "ZMK split central firmware for Feral left half";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-zmk-right = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk-right";
+          src = feral-zmk-src;
+          board = "xiao_ble";
+          shield = "feral_right";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "ZMK split peripheral firmware for Feral right half";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-zmk-diag-col2row = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk-diag-col2row";
+          src = feral-zmk-src;
+          board = "xiao_ble";
+          shield = "feral_diag";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "ZMK bring-up firmware for Feral (col2row scan)";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-zmk-diag-row2col = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk-diag-row2col";
+          src = feral-zmk-src;
+          board = "xiao_ble";
+          shield = "feral_diag_rev";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "ZMK bring-up firmware for Feral (row2col scan)";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-raw-scan = zmk-nix.legacyPackages.${system}.buildZephyrPackage {
+          name = "feral-raw-scan";
+          src = ./feral/raw-scan;
+          zephyrDepsHash = "sha256-+SgSs8+fI3Li+B5eFXBNBa+c/OVbyKqjbogiC8d5vrg=";
+          configurePhase = ''
+            runHook preConfigure
+
+            mkdir workspace
+            cd workspace
+
+            cp --no-preserve=mode -rt . "$westDeps"/*
+            cp -R "$src" app
+
+            mkdir -p zephyr/.git
+            : > zephyr/.git/index
+
+            mkdir -p .west
+            cat >.west/config <<EOF
+            [manifest]
+            path = zephyr
+            file = west.yml
+            EOF
+
+            west build -d "''${cmakeBuildDir:=build}" \
+              -s app \
+              -b xiao_ble
+
+            cd "$cmakeBuildDir"
+
+            runHook postConfigure
+          '';
+          installPhase = ''
+            runHook preInstall
+
+            mkdir $out
+            cp zephyr/zephyr.uf2 zephyr/zephyr.bin zephyr/zephyr.elf $out/
+
+            runHook postInstall
+          '';
+          meta = {
+            description = "Standalone raw GPIO scan app for Feral";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
       in
       {
         devShells.default = pkgs.mkShell {
@@ -122,6 +240,12 @@
         packages.annepro2-qmk = annepro2-qmk.hex;
         packages.preonic-qmk = preonic-qmk.hex;
         packages.preonic-zmk = preonic-zmk;
+        packages.feral-zmk = feral-zmk;
+        packages.feral-zmk-left = feral-zmk-left;
+        packages.feral-zmk-right = feral-zmk-right;
+        packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
+        packages.feral-zmk-diag-row2col = feral-zmk-diag-row2col;
+        packages.feral-raw-scan = feral-raw-scan;
 
         apps.default = {
           type = "app";

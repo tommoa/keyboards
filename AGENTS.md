@@ -21,6 +21,12 @@ packages and `<keyboard>-<firmware>-<action>` for apps:
 ```sh
 nix build .#preonic-qmk          # Build QMK firmware (.hex)
 nix build .#preonic-zmk          # Build ZMK firmware (.bin + .hex)
+nix build .#feral-zmk            # Build Feral ZMK firmware (.uf2)
+nix build .#feral-zmk-left       # Build Feral split left/central (.uf2)
+nix build .#feral-zmk-right      # Build Feral split right/peripheral (.uf2)
+nix build .#feral-zmk-diag-col2row # Build Feral ZMK diode/matrix diag (C2R)
+nix build .#feral-zmk-diag-row2col # Build Feral ZMK diode/matrix diag (R2C)
+nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
 nix run .#preonic-qmk-flash      # Build + flash QMK via dfu-util
 nix run .#preonic-zmk-flash      # Flash ZMK via dfu-util
 nix run .#preonic-zmk-update     # Update west.yml pins + zephyrDepsHash
@@ -50,6 +56,30 @@ nix develop ./feral               # Ergogen dev shell (Feral PCB)
 `feral/` is an independent flake with its own `treefmt.nix`. It is
 excluded from the root formatter config. Use `nix fmt ./feral` and
 `nix build ./feral` separately.
+
+Feral now also has ZMK bring-up firmware under `zmk/feral/config`
+built from the root flake. Diode direction is a build-time setting in
+ZMK, so bring-up uses two firmware variants (`feral_diag` and
+`feral_diag_rev`) with the same matrix keymap and opposite
+`diode-direction` values.
+- The normal split Feral firmware builds as `feral-zmk-left` and
+  `feral-zmk-right`. The left half is the ZMK split central and the
+  right half is the peripheral.
+- The Feral diagnostic transform is sparse: 24 main matrix positions
+  plus 2 thumb keys. Keep the visible test keymap in physical order,
+  with columns matching Ergogen's `outer -> pinky -> ring -> middle ->
+  index -> inner` net order.
+- For `kscan-gpio-matrix`, the GPIO pull flags must match the selected
+  diode direction: `col2row` uses pull-downs on rows, while `row2col`
+  uses pull-downs on columns. Changing only `diode-direction` is not
+  sufficient for a valid reverse-scan test.
+- On `xiao_ble`, disable `&uart0` in Feral diagnostic overlays. The
+  board default claims `D6/D7` for UART TX/RX, which corrupts matrix
+  diagnostics that use those pins as columns.
+- For powered matrix debugging beyond ZMK key events, use the standalone
+  `feral-raw-scan` Zephyr app. It prints raw per-column row bitmasks over
+  USB CDC ACM serial, which is more reliable than interpreting typed text
+  when investigating row/column coupling.
 
 ## Code style
 
@@ -146,6 +176,9 @@ Conventional Commits format: `type(scope): description`
 - Automated commits use bot identities (`qmk-update-bot`,
   `zmk-update-bot`) with `github-actions[bot]` email
 
+- The normal split Feral firmware builds as `feral-zmk-left` and
+  `feral-zmk-right`. The left half is the ZMK split central and the
+  right half is the peripheral.
 ## Architecture notes
 
 - The ZMK board ID for the Preonic is `preonic//zmk` (HWMv2 variant

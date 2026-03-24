@@ -1,0 +1,8 @@
+config SHIELD_FERAL
+    def_bool $(shields_list_contains,feral)
+
+config SHIELD_FERAL_LEFT
+    def_bool $(shields_list_contains,feral_left)
+
+config SHIELD_FERAL_RIGHT
+    def_bool $(shields_list_contains,feral_right)

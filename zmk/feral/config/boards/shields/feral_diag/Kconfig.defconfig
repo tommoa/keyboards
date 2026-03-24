@@ -1,0 +1,6 @@
+if SHIELD_FERAL_DIAG
+
+config ZMK_KEYBOARD_NAME
+    default "Feral Diag C2R"
+
+endif

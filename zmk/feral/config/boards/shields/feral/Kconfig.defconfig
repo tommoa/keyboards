@@ -1,0 +1,26 @@
+if SHIELD_FERAL
+
+config ZMK_KEYBOARD_NAME
+    default "Feral"
+
+endif
+
+if SHIELD_FERAL_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Feral"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 1
+
+endif
+
+if SHIELD_FERAL_LEFT || SHIELD_FERAL_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif
