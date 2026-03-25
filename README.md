@@ -5,7 +5,7 @@ Custom keyboard firmware and hardware, built with Nix.
 | Keyboard | Firmware | MCU | Status |
 |---|---|---|---|
 | [Preonic rev3 Drop](https://drop.com/buy/preonic-mechanical-keyboard) | QMK, ZMK | STM32F303 | Active |
-| Feral (custom split) | ZMK | 2x Seeed XIAO BLE | Bring-up complete |
+| Feral (custom split) | ZMK | 2x Seeed XIAO BLE | Making case |
 
 Source lives on [sourcehut](https://git.sr.ht/~tommoa/keyboards),
 mirrored to [GitHub](https://github.com/tommoa/keyboards).
@@ -98,7 +98,7 @@ nix build .#preonic-qmk        # Build QMK firmware
 nix build .#preonic-zmk        # Build ZMK firmware
 nix build .#feral-zmk          # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
 nix build .#feral-zmk-diag-col2row # Build Feral bring-up firmware (C2R)
-nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
+nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app (USB serial bitmasks)
 nix run .#preonic-qmk-flash    # Build and flash via dfu-util
 nix run .#preonic-zmk-update   # Update ZMK west.yml pins + zephyrDepsHash
 nix develop                    # QMK dev shell

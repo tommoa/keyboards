@@ -37,3 +37,16 @@ keys are mapped separately as `Y` then `Z`.
 
 - Keys match the visible map: matrix wiring is correct for `col2row`.
 - Missing keys or dead rows/columns: wiring, solder, or net issue.
+
+## If the diag behaves strangely
+
+If key output is noisy, inconsistent, or does not match what the matrix
+should be doing, switch to the standalone raw scan app:
+
+```sh
+nix build .#feral-raw-scan
+```
+
+Flash the resulting UF2 and read its USB serial output. It prints raw
+per-column row bitmasks, which is more useful than typed characters
+when debugging powered matrix issues.
