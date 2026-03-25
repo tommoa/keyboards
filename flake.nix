@@ -101,43 +101,15 @@
 
         feral-zmk-src = ./zmk;
 
-        feral-zmk = zmk-nix.legacyPackages.${system}.buildKeyboard {
+        feral-zmk = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
           name = "feral-zmk";
           src = feral-zmk-src;
           board = "xiao_ble";
-          shield = "feral";
+          shield = "feral_%PART%";
           config = "feral/config";
           zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
           meta = {
-            description = "ZMK firmware for Feral";
-            license = nixpkgs.lib.licenses.mit;
-            platforms = nixpkgs.lib.platforms.all;
-          };
-        };
-
-        feral-zmk-left = zmk-nix.legacyPackages.${system}.buildKeyboard {
-          name = "feral-zmk-left";
-          src = feral-zmk-src;
-          board = "xiao_ble";
-          shield = "feral_left";
-          config = "feral/config";
-          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
-          meta = {
-            description = "ZMK split central firmware for Feral left half";
-            license = nixpkgs.lib.licenses.mit;
-            platforms = nixpkgs.lib.platforms.all;
-          };
-        };
-
-        feral-zmk-right = zmk-nix.legacyPackages.${system}.buildKeyboard {
-          name = "feral-zmk-right";
-          src = feral-zmk-src;
-          board = "xiao_ble";
-          shield = "feral_right";
-          config = "feral/config";
-          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
-          meta = {
-            description = "ZMK split peripheral firmware for Feral right half";
+            description = "ZMK split firmware for Feral";
             license = nixpkgs.lib.licenses.mit;
             platforms = nixpkgs.lib.platforms.all;
           };
@@ -241,8 +213,6 @@
         packages.preonic-qmk = preonic-qmk.hex;
         packages.preonic-zmk = preonic-zmk;
         packages.feral-zmk = feral-zmk;
-        packages.feral-zmk-left = feral-zmk-left;
-        packages.feral-zmk-right = feral-zmk-right;
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
         packages.feral-zmk-diag-row2col = feral-zmk-diag-row2col;
         packages.feral-raw-scan = feral-raw-scan;

@@ -96,11 +96,8 @@ Flake outputs follow the naming convention `<keyboard>-<firmware>`:
 ```sh
 nix build .#preonic-qmk        # Build QMK firmware
 nix build .#preonic-zmk        # Build ZMK firmware
-nix build .#feral-zmk          # Build Feral ZMK firmware
-nix build .#feral-zmk-left     # Build Feral split left/central firmware
-nix build .#feral-zmk-right    # Build Feral split right/peripheral firmware
-nix build .#feral-zmk-diag-col2row # Build Feral ZMK bring-up firmware (C2R)
-nix build .#feral-zmk-diag-row2col # Build Feral ZMK bring-up firmware (R2C)
+nix build .#feral-zmk          # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
+nix build .#feral-zmk-diag-col2row # Build Feral bring-up firmware (C2R)
 nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
 nix run .#preonic-qmk-flash    # Build and flash via dfu-util
 nix run .#preonic-zmk-update   # Update ZMK west.yml pins + zephyrDepsHash

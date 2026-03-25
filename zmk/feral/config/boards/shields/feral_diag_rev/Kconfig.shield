@@ -1,2 +1,0 @@
-config SHIELD_FERAL_DIAG_REV
-    def_bool $(shields_list_contains,feral_diag_rev)

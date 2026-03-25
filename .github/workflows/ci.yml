@@ -30,12 +30,12 @@ jobs:
         run: nix build .#${{ matrix.package }}
       - name: Collect firmware
         run: |
-          mkdir -p firmware
-          cp result/*.bin firmware/${{ matrix.package }}.bin 2>/dev/null || true
-          cp result/*.hex firmware/${{ matrix.package }}.hex 2>/dev/null || true
-          cp result/*.uf2 firmware/${{ matrix.package }}.uf2 2>/dev/null || true
+          mkdir -p firmware/${{ matrix.package }}
+          cp result/*.bin firmware/${{ matrix.package }}/ 2>/dev/null || true
+          cp result/*.hex firmware/${{ matrix.package }}/ 2>/dev/null || true
+          cp result/*.uf2 firmware/${{ matrix.package }}/ 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.package }}
-          path: firmware/
+          path: firmware/${{ matrix.package }}/
           if-no-files-found: error

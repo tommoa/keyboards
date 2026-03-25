@@ -38,9 +38,10 @@ jobs:
           for pkg in $(nix eval .#packages.x86_64-linux --apply builtins.attrNames --json | jq -r \
             '.[] | select(test("-zmk(-.+)?$"))'); do
             out="$(nix build ".#$pkg" --print-out-paths)"
-            cp "$out"/*.bin "firmware/$pkg.bin" 2>/dev/null || true
-            cp "$out"/*.hex "firmware/$pkg.hex" 2>/dev/null || true
-            cp "$out"/*.uf2 "firmware/$pkg.uf2" 2>/dev/null || true
+            mkdir -p "firmware/$pkg"
+            cp "$out"/*.bin "firmware/$pkg/" 2>/dev/null || true
+            cp "$out"/*.hex "firmware/$pkg/" 2>/dev/null || true
+            cp "$out"/*.uf2 "firmware/$pkg/" 2>/dev/null || true
           done
       - name: Upload firmware artifacts
         if: steps.changes.outputs.changed == 'true'

@@ -1,6 +1,0 @@
-if SHIELD_FERAL_DIAG_REV
-
-config ZMK_KEYBOARD_NAME
-    default "Feral Diag R2C"
-
-endif
