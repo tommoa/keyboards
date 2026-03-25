@@ -129,20 +129,6 @@
           };
         };
 
-        feral-zmk-diag-row2col = zmk-nix.legacyPackages.${system}.buildKeyboard {
-          name = "feral-zmk-diag-row2col";
-          src = feral-zmk-src;
-          board = "xiao_ble";
-          shield = "feral_diag_rev";
-          config = "feral/config";
-          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
-          meta = {
-            description = "ZMK bring-up firmware for Feral (row2col scan)";
-            license = nixpkgs.lib.licenses.mit;
-            platforms = nixpkgs.lib.platforms.all;
-          };
-        };
-
         feral-raw-scan = zmk-nix.legacyPackages.${system}.buildZephyrPackage {
           name = "feral-raw-scan";
           src = ./feral/raw-scan;
@@ -214,7 +200,6 @@
         packages.preonic-zmk = preonic-zmk;
         packages.feral-zmk = feral-zmk;
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
-        packages.feral-zmk-diag-row2col = feral-zmk-diag-row2col;
         packages.feral-raw-scan = feral-raw-scan;
 
         apps.default = {
