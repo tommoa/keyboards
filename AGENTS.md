@@ -26,6 +26,7 @@ nix build .#feral-zmk            # Build Feral split firmware (zmk_left.uf2 + zm
 nix build .#feral-zmk-diag-col2row # Build Feral ZMK diode/matrix diag (C2R)
 nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
 nix build .#feral-pcb            # Build Feral Ergogen/KiCad outputs via the sub-flake
+nix build .#feral-case-shell-stls # Render shell-only Feral case STL artifacts
 nix run .#preonic-qmk-flash      # Build + flash QMK via dfu-util
 nix run .#vortex-core-qmk-flash  # Build + flash Vortex Core via pok3rtool
 nix run .#vortex-core-qmk-bootloader # Reboot Vortex Core into bootloader
@@ -119,6 +120,10 @@ firmware that validates the `col2row` matrix wiring.
   `uv run --with cadquery --with trimesh --with pymeshfix --with numpy python3 feral/case/scripts/convert_step_to_stl.py`
   and use that wrapper in the OpenSCAD preview. The single merged STL is
   not watertight enough for OpenSCAD `Render`.
+- The shell-only STL package (`nix build .#feral-case-shell-stls`) regenerates
+  `component_positions.scad` from the tracked KiCad PCB and stubs the
+  preview-only XIAO mesh include. It is the right CI target for printable
+  shell artifacts, but it does not validate electronics preview renders.
 
 ## Code style
 

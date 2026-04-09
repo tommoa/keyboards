@@ -271,6 +271,7 @@
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
         packages.feral-raw-scan = feral-raw-scan;
         packages.feral-pcb = feral.packages.${system}.default;
+        packages.feral-case-shell-stls = feral.packages.${system}.case-shell-stls;
 
         apps.default = {
           type = "app";

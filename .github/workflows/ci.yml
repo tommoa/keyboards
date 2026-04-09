@@ -39,3 +39,16 @@ jobs:
           name: ${{ matrix.package }}
           path: firmware/${{ matrix.package }}/
           if-no-files-found: error
+  case-shell-stls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build shell STL artifacts
+        run: nix build .#feral-case-shell-stls
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feral-case-shell-stls
+          path: result/*.stl
+          if-no-files-found: error

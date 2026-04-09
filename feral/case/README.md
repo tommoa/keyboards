@@ -24,6 +24,7 @@ This directory holds the first printable case workflow for Feral.
 - For case fit, prefer `feral/feral.kicad_pcb` over `feral/result/pcbs/feral.kicad_pcb`.
 - The new Ergogen helper outlines are intended for case planning, not as the final 3D case source.
 - Ergogen DXF exports use the opposite Y direction from KiCad; the OpenSCAD prototype flips imported DXFs back into KiCad-style coordinates before applying hole and component constants.
+- `nix build .#feral-case-shell-stls` renders the printable left/right top/bottom shell STLs from the tracked KiCad PCB plus Ergogen DXF outputs without committing generated case artifacts.
 
 ## Verified helper outlines
 
@@ -55,6 +56,7 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 - Regenerate the XIAO mesh wrapper and split STL parts from the vendor STEP with:
   `uv run --with cadquery --with trimesh --with pymeshfix --with numpy python3 feral/case/scripts/convert_step_to_stl.py "path/to/XIAO-nRF52840.step" feral/case/cad/generated/xiao-nrf52840.stl --parts-dir feral/case/cad/generated/xiao-nrf52840-parts --wrapper feral/case/cad/generated/xiao-nrf52840-parts.scad`
 - The analytical clearance scripts (`check_keycap_clearance.py` and `check_usb_clearance.py`) expect those generated files to exist and will print the same regeneration commands if they are missing.
+- The shell-only Nix STL build stubs `xiao-nrf52840-parts.scad` because the printable shell geometry does not need the preview mesh. Use the real generated XIAO assets when checking electronics preview and mesh-based fit tooling.
 
 ## Next modeling steps
 
