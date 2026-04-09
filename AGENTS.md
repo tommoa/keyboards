@@ -220,7 +220,9 @@ Conventional Commits format: `type(scope): description`
 - **Bidirectional sync**: pushes with `GITHUB_TOKEN` don't trigger
   other workflows, so update workflows explicitly dispatch `ci.yml`
   and `sync.yml` via `gh workflow run` (requires `workflow_dispatch`
-  on both)
+  on both). Keep those dispatch steps independent with
+  `if: always() && steps.<push-step>.outcome == 'success'` so a failed
+  CI dispatch does not skip the sourcehut mirror.
 - Automated commits use bot identities (`qmk-update-bot`,
   `zmk-update-bot`) with `github-actions[bot]` email
 

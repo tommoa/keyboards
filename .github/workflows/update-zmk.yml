@@ -50,6 +50,7 @@ jobs:
           name: zmk_firmware
           path: firmware
       - name: Commit and push
+        id: push
         if: steps.changes.outputs.changed == 'true'
         run: |
           git config user.name "zmk-update-bot"
@@ -63,12 +64,12 @@ jobs:
 
           git push origin master
       - name: Trigger CI
-        if: steps.changes.outputs.changed == 'true'
+        if: always() && steps.changes.outputs.changed == 'true' && steps.push.outcome == 'success'
         run: gh workflow run ci.yml --ref master
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Trigger sourcehut sync
-        if: steps.changes.outputs.changed == 'true'
+        if: always() && steps.changes.outputs.changed == 'true' && steps.push.outcome == 'success'
         run: gh workflow run sync.yml --ref master
         env:
           GH_TOKEN: ${{ github.token }}
