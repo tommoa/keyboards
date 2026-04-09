@@ -22,6 +22,18 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+        openscad-cli = pkgs.writeShellScriptBin "openscad" ''
+          if [ -x "${pkgs.openscad}/bin/openscad" ]; then
+            exec "${pkgs.openscad}/bin/openscad" "$@"
+          fi
+
+          if [ -x "${pkgs.openscad}/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" ]; then
+            exec "${pkgs.openscad}/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" "$@"
+          fi
+
+          echo "Could not find an OpenSCAD executable in ${pkgs.openscad}" >&2
+          exit 1
+        '';
       in
       {
         devShells.default = pkgs.mkShell {
@@ -29,6 +41,7 @@
             (with pkgs; [
               ergogen
             ])
+            ++ [ openscad-cli ]
             ++ [ treefmtEval.config.build.wrapper ]
             ++ builtins.attrValues treefmtEval.config.build.programs;
 

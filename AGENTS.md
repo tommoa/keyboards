@@ -24,6 +24,7 @@ nix build .#preonic-zmk          # Build ZMK firmware (.bin + .hex)
 nix build .#feral-zmk            # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
 nix build .#feral-zmk-diag-col2row # Build Feral ZMK diode/matrix diag (C2R)
 nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
+nix build .#feral-pcb            # Build Feral Ergogen/KiCad outputs via the sub-flake
 nix run .#preonic-qmk-flash      # Build + flash QMK via dfu-util
 nix run .#preonic-zmk-flash      # Flash ZMK via dfu-util
 nix run .#preonic-zmk-update     # Update west.yml pins + zephyrDepsHash
@@ -45,14 +46,15 @@ package in a matrix discovered at runtime via `nix eval`.
 ```sh
 nix develop                       # QMK dev shell (default)
 nix develop .#zmk                 # ZMK dev shell
-nix develop ./feral               # Ergogen dev shell (Feral PCB)
+nix develop ./feral               # Feral Ergogen + OpenSCAD shell
 ```
 
 ### Feral sub-project
 
 `feral/` is an independent flake with its own `treefmt.nix`. It is
 excluded from the root formatter config. Use `nix fmt ./feral` and
-`nix build ./feral` separately.
+`nix build ./feral` separately. The root flake also exposes the
+sub-flake output as `nix build .#feral-pcb`.
 
 Feral now also has ZMK bring-up firmware under `zmk/feral/config`
 built from the root flake. Bring-up uses a single `feral_diag`
@@ -71,6 +73,47 @@ firmware that validates the `col2row` matrix wiring.
   `feral-raw-scan` Zephyr app. It prints raw per-column row bitmasks over
   USB CDC ACM serial, which is more reliable than interpreting typed text
   when investigating row/column coupling.
+- For Feral case work, use `python3 feral/case/scripts/check_clearances.py`
+  after changing mounting-boss radii to confirm they still clear the
+  `PG1350` hotswap footprint features in `feral/feral.kicad_pcb`.
+- For Feral pod/keycap fit checks, use
+  `python3 feral/case/scripts/check_keycap_clearance.py [--tolerance 0.5]`.
+  It runs OpenSCAD through `nix develop ./feral -c openscad`, checks the
+  top pod against nearby Choc keycap envelopes, and reports which
+  pod-adjacent keys overlap. Use `--define name=value` to compare SCAD
+  parameter tweaks without editing the file, and read the reported
+  top-view overlap bbox/area to quantify before/after changes. The
+  relaxed thumb defaults to a 1u Choc envelope; use
+  `--define 'relaxed_thumb_keycap_size=choc_keycap_1_5u_size'` to
+  stress-test a 1.5u thumb cap.
+- For Feral USB opening checks, use
+  `python3 feral/case/scripts/check_usb_clearance.py [--min-clearance 0.3]`.
+  It analytically checks both the `left/top` and `right/bottom` USB
+  openings against the current modeled XIAO USB shell envelope, derived
+  from the official XIAO mesh and treated as extending outward to the
+  case edge by default. It reports
+  `top`, `bottom`, `left`, `right`, `outward`, and `inward` clearances;
+  use `--shell-only` to inspect the board-side shell without the outward
+  extension.
+- The Feral case preview can source PCB-mounted component positions from
+  `feral/feral.kicad_pcb` via
+  `python3 feral/case/scripts/extract_component_positions.py`, which
+  regenerates `feral/case/cad/generated/component_positions.scad`. Keep
+  the battery as a manual case-side envelope because it is off-board.
+- For reversible Feral previews, keep JST XY/rotation from KiCad but place
+  the JST on `battery_side`, not the raw footprint layer.
+- For asymmetric 2D preview envelopes derived from KiCad footprints in
+  `feral_case.scad` (for example the JST PH side-entry header or rotated
+  keycap bounds), double-check the rotation sign against a render. In this
+  model, copied KiCad angles can need sign inversion before the asymmetric
+  outline lands on the expected side of the footprint.
+- For XIAO USB-C fit checks, prefer the vendor 3D model over a hand-made
+  bounding box. Convert the Seeed STEP file into the generated wrapper
+  `feral/case/cad/generated/xiao-nrf52840-parts.scad` and
+  `feral/case/cad/generated/xiao-nrf52840-parts/` STL directory with
+  `uv run --with cadquery --with trimesh --with pymeshfix --with numpy python3 feral/case/scripts/convert_step_to_stl.py`
+  and use that wrapper in the OpenSCAD preview. The single merged STL is
+  not watertight enough for OpenSCAD `Render`.
 
 ## Code style
 

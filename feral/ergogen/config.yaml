@@ -16,6 +16,16 @@ units:
   bat_plug_w: 7.6
   bat_plug_h: 5.9
 
+  # Case planning helpers
+  m2_hole_r: 1.1
+  m2_boss_r: 3.25
+  xiao_keepout_w: xiao_w + 2
+  xiao_keepout_h: xiao_h + 2
+  jst_keepout_w: 8.5
+  jst_keepout_h: 8
+  side_btn_keepout_w: 8.5
+  side_btn_keepout_h: 6.5
+
   # Laser cutting
   kerf: 0.006 * 25.4 # Inches
 points:
@@ -110,6 +120,92 @@ outlines:
     - name: board
     - operation: subtract
       name: keys
+  case_top_shell:
+    - name: board
+  case_top_opening:
+    - name: combo
+  case_mount_holes:
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [191.6, -123.2]
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [162.4, -70.4]
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [105.2, -37.8]
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [213.6, -72.2]
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [113, -110.4]
+    - what: circle
+      radius: m2_hole_r
+      where:
+        shift: [183.4, -26.8]
+  case_mount_bosses:
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [191.6, -123.2]
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [162.4, -70.4]
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [105.2, -37.8]
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [213.6, -72.2]
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [113, -110.4]
+    - what: circle
+      radius: m2_boss_r
+      where:
+        shift: [183.4, -26.8]
+  _case_xiao_keepout:
+    - what: rectangle
+      size: [xiao_keepout_w, xiao_keepout_h]
+      where:
+        ref: matrix_inner_top
+        shift: [1.2 * kx, -3]
+  _case_jst_keepout:
+    - what: rectangle
+      size: [jst_keepout_w, jst_keepout_h]
+      where:
+        ref: matrix_inner_top
+        shift: [1.2 * kx - xiao_h / 2 - bat_plug_h / 2 - 0.5, xiao_w / 2 + 0.5]
+        rotate: 90
+  _case_reset_keepout:
+    - what: rectangle
+      size: [side_btn_keepout_w, side_btn_keepout_h]
+      where:
+        ref: matrix_inner_top
+        shift: [1.2 * kx + xiao_w / 2, -3 - xiao_h / 2 - 5]
+        rotate: -90
+  _case_power_switch_keepout:
+    - what: rectangle
+      size: [side_btn_keepout_w, side_btn_keepout_h]
+      where:
+        ref: matrix_inner_top
+        shift: [1.2 * kx + xiao_w / 2, -3 - xiao_h / 2 - 15]
+        rotate: -90
+  case_component_keepouts:
+    - name: _case_xiao_keepout
+    - name: _case_jst_keepout
+    - name: _case_reset_keepout
+    - name: _case_power_switch_keepout
 pcbs:
   feral:
     outlines.feral.outline: board
