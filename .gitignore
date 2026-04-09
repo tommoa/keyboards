@@ -1,3 +1,13 @@
+.DS_Store
 .qmk_firmware
 .opencode/
+annepro2_c18_default.bin
+preonic
+result-*
+*.kicad_prl
+fp-info-cache
+feral/case/prototypes/
+feral/case/cad/generated/
+feral/gerbers/
+feral/gerbers.zip
 result
