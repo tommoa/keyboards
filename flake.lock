@@ -3,7 +3,9 @@
     "annepro2Tools": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1756229922,
@@ -19,16 +21,32 @@
         "type": "github"
       }
     },
+    "feral": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs",
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "path": "./feral",
+        "type": "path"
+      },
+      "original": {
+        "path": "./feral",
+        "type": "path"
+      },
+      "parent": []
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1694529238,
-        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
         "type": "github"
       },
       "original": {
@@ -39,7 +57,7 @@
     },
     "flake-utils-plus": {
       "inputs": {
-        "flake-utils": "flake-utils_2"
+        "flake-utils": "flake-utils_3"
       },
       "locked": {
         "lastModified": 1738591040,
@@ -58,7 +76,7 @@
     },
     "flake-utils-plus_2": {
       "inputs": {
-        "flake-utils": "flake-utils_3"
+        "flake-utils": "flake-utils_4"
       },
       "locked": {
         "lastModified": 1738591040,
@@ -80,11 +98,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1694529238,
-        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
         "type": "github"
       },
       "original": {
@@ -111,18 +129,36 @@
         "type": "github"
       }
     },
-    "nixpkgs": {
+    "flake-utils_4": {
+      "inputs": {
+        "systems": "systems_4"
+      },
       "locked": {
-        "lastModified": 1770537093,
-        "narHash": "sha256-pF1quXG5wsgtyuPOHcLfYg/ft/QMr8NnX0i6tW2187s=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "fef9403a3e4d31b0a23f0bacebbec52c248fbb51",
+        "lastModified": 1694529238,
+        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "ref": "nixpkgs-unstable",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1753429684,
+        "narHash": "sha256-9h7+4/53cSfQ/uA3pSvCaBepmZaz/dLlLVJnbQ+SJjk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "7fd36ee82c0275fb545775cc5e4d30542899511d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -141,6 +177,54 @@
         "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
+      }
+    },
+    "openocd-ht32-source": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1483498785,
+        "narHash": "sha256-E5MunGHPEFi8DRwvLNtknUde1nheTHQR2Y9AXh1eBNo=",
+        "ref": "refs/heads/master",
+        "rev": "e3fa2ecb1993bc7869b36e99a45027e112823a42",
+        "revCount": 7296,
+        "type": "git",
+        "url": "https://github.com/ChaoticEnigma/openocd-ht32"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/ChaoticEnigma/openocd-ht32"
+      }
+    },
+    "pok3r-re-firmware-source": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1631207645,
+        "narHash": "sha256-2Fulx/XJriRlhF0IArsuZ8zk0Vo55ssBB79paVo4MTc=",
+        "ref": "refs/heads/master",
+        "rev": "2fd4073aeefe713ef769b93b077aa67090a0b620",
+        "revCount": 294,
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/pok3r_re_firmware"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/pok3r_re_firmware"
+      }
+    },
+    "pok3rtool-source": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767502596,
+        "narHash": "sha256-zkXxwPM29LmhmPn7IfXogT7yeFkA/l/ad8uijBh/LKA=",
+        "ref": "refs/heads/master",
+        "rev": "7da3d5169bd5d7218464d302024e97c0d109999a",
+        "revCount": 210,
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/pok3rtool"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/pok3rtool"
       }
     },
     "qmk-firmware-source": {
@@ -185,11 +269,16 @@
     "root": {
       "inputs": {
         "annepro2Tools": "annepro2Tools",
+        "feral": "feral",
         "flake-utils-plus": "flake-utils-plus",
         "nixpkgs": "nixpkgs_2",
+        "openocd-ht32-source": "openocd-ht32-source",
+        "pok3r-re-firmware-source": "pok3r-re-firmware-source",
+        "pok3rtool-source": "pok3rtool-source",
         "qmk-firmware-source": "qmk-firmware-source",
         "qmk-nix-utils": "qmk-nix-utils",
-        "treefmt-nix": "treefmt-nix",
+        "treefmt-nix": "treefmt-nix_2",
+        "vortex-qmk-source": "vortex-qmk-source",
         "zmk-nix": "zmk-nix"
       }
     },
@@ -238,7 +327,43 @@
         "type": "github"
       }
     },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "feral",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1770228511,
+        "narHash": "sha256-wQ6NJSuFqAEmIg2VMnLdCnUc0b7vslUohqqGGD+Fyxk=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "337a4fe074be1042a35086f15481d763b8ddc0e7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -256,6 +381,24 @@
         "owner": "numtide",
         "repo": "treefmt-nix",
         "type": "github"
+      }
+    },
+    "vortex-qmk-source": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1594190874,
+        "narHash": "sha256-RvfAhMH1ElQwILRVghCe+qc3wHx9tQk6ctU9RGXQvWw=",
+        "ref": "refs/heads/master",
+        "rev": "e2d470113a0db497d866be9bda56af7378180602",
+        "revCount": 7403,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/qmk_pok3r"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/pok3r-custom/qmk_pok3r"
       }
     },
     "zmk-nix": {
