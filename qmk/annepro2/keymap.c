@@ -38,7 +38,7 @@ enum annepro2_layers {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT_60_ansi(
         KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
-        KC_TAB,         KC_Q,    KC_W,    KC_E,         KC_R,         KC_T,     KC_Y,     KC_U,         KC_I,         KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_TAB,         KC_Q,    KC_W,    KC_E,         KC_R,         KC_T,     KC_Y,     KC_U,         KC_I,         KC_O,    KC_P,    KC_LBRC, KC_RBRC, RGUI_T(KC_BSLS),
         LALT_T(KC_ESC), KC_A,    KC_S,    LCTL_T(KC_D), LGUI_T(KC_F), KC_G,     KC_H,     LGUI_T(KC_J), LCTL_T(KC_K), KC_L,    KC_SCLN, LALT_T(KC_QUOT), KC_ENT,
         KC_LSFT,                 KC_Z,    KC_X,         KC_C,         KC_V,     KC_B,     KC_N,         KC_M,         KC_COMM, KC_DOT,  KC_SLSH, RSFT_T(KC_UP),
         KC_LCTL,        KC_LGUI, LOWER,                           SP_LOWER,                          RAISE,  KC_LEFT, KC_DOWN, RCTL_T(KC_RGHT)
@@ -46,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_COLEMAK] = LAYOUT_60_ansi(
         KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,       KC_MINS, KC_EQL,  KC_BSPC,
-        KC_TAB,         KC_Q,    KC_W,    KC_F,         KC_P,         KC_G,     KC_J,     KC_L,         KC_U,         KC_Y,    KC_SCLN,    KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_TAB,         KC_Q,    KC_W,    KC_F,         KC_P,         KC_G,     KC_J,     KC_L,         KC_U,         KC_Y,    KC_SCLN,    KC_LBRC, KC_RBRC, RGUI_T(KC_BSLS),
         LALT_T(KC_ESC), KC_A,    KC_R,    LCTL_T(KC_S), LGUI_T(KC_T), KC_D,     KC_H,     LGUI_T(KC_N), LCTL_T(KC_E), KC_I,    KC_O,       LALT_T(KC_QUOT), KC_ENT,
         KC_LSFT,                 KC_Z,    KC_X,         KC_C,         KC_V,     KC_B,     KC_K,         KC_M,         KC_COMM, KC_DOT,     KC_SLSH, RSFT_T(KC_UP),
         KC_LCTL,        KC_LGUI, LOWER,                           SP_LOWER,                          RAISE,  KC_LEFT, KC_DOWN, RCTL_T(KC_RGHT)
@@ -62,7 +62,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY_IN_COLEMAK] = LAYOUT_60_ansi(
         KC_GRV,         KC_1,    KC_2,    KC_3,         KC_4,         KC_5,     KC_6,     KC_7,         KC_8,         KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
-        KC_TAB,         KC_Q,    KC_W,    KC_K,         KC_S,         KC_F,     KC_O,     KC_I,         KC_L,         KC_SCLN, KC_R,    KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_TAB,         KC_Q,    KC_W,    KC_K,         KC_S,         KC_F,     KC_O,     KC_I,         KC_L,         KC_SCLN, KC_R,    KC_LBRC, KC_RBRC, RGUI_T(KC_BSLS),
         LALT_T(KC_ESC), KC_A,    KC_D,    LCTL_T(KC_G), LGUI_T(KC_E), KC_T,     KC_H,     LGUI_T(KC_Y), LCTL_T(KC_N), KC_U,    KC_P,    LALT_T(KC_QUOT), KC_ENT,
         KC_LSFT,                 KC_Z,    KC_X,         KC_C,         KC_V,     KC_B,     KC_J,         KC_M,         KC_COMM, KC_DOT,  KC_SLSH, RSFT_T(KC_UP),
         KC_LCTL,        KC_LGUI, LOWER,                           SP_LOWER,                          RAISE,  KC_LEFT, KC_DOWN, RCTL_T(KC_RGHT)
@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_RAISE] = LAYOUT_60_ansi(
-        Q_IN_C,  QWERTY,  COLEMAK, GAMING,  KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, KC_AP_RGB_MOD, KC_AP_RGB_TOG, KC_AP_RGB_VAD, KC_AP_RGB_VAI, XXXXXXX, QK_BOOT,
+        Q_IN_C,  KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, QWERTY, COLEMAK, GAMING, KC_AP_LED_OFF, KC_AP_LED_NEXT_PROFILE, KC_AP_LED_NEXT_INTENSITY, KC_AP_LED_SPEED, XXXXXXX, QK_BOOT,
         NK_TOGG, XXXXXXX, XXXXXXX, KC_BRID, KC_BRIU,    XXXXXXX,    XXXXXXX,    C(S(KC_TAB)), C(KC_TAB),   XXXXXXX,       KC_PSCR,       KC_HOME,       KC_END,  DB_TOGG,
         KC_CAPS, XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT,    XXXXXXX,    KC_LEFT,    KC_DOWN,     KC_UP,       KC_RGHT,       KC_PGUP,       KC_PGDN,       _______,
         _______,          XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_HOME,     KC_PGDN,     KC_PGUP,       KC_END,        XXXXXXX,       KC_INS,
