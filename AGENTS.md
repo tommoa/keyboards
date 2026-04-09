@@ -65,6 +65,10 @@ sub-flake output as `nix build .#feral-pcb`.
 Feral now also has ZMK bring-up firmware under `zmk/feral/config`
 built from the root flake. Bring-up uses a single `feral_diag`
 firmware that validates the `col2row` matrix wiring.
+- Any Feral ZMK target that reads the shared `zmk/feral/config/feral.conf`
+  must include the local `feral/startup-led` ZMK module via
+  `-DZMK_EXTRA_MODULES=...`, or Kconfig will fail on
+  `CONFIG_FERAL_STARTUP_LED_BLINK`.
 - `feral-zmk` uses `buildSplitKeyboard` and outputs `zmk_left.uf2`
   and `zmk_right.uf2`. The left half is the ZMK split central and the
   right half is the peripheral.

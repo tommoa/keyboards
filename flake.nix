@@ -172,6 +172,9 @@
           shield = "feral_diag";
           config = "feral/config";
           zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          extraCmakeFlags = [
+            "-DZMK_EXTRA_MODULES=${./feral/startup-led}"
+          ];
           meta = {
             description = "ZMK bring-up firmware for Feral (col2row scan)";
             license = nixpkgs.lib.licenses.mit;
