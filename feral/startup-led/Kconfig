@@ -1,6 +1,27 @@
-config FERAL_STARTUP_LED_BLINK
-    bool "Blink XIAO LED on startup"
+config FERAL_RGBLED_STATUS
+    bool "Feral XIAO RGB status LED support"
     default n
     depends on GPIO
     help
-      Blink the onboard XIAO LED briefly during startup.
+      Drive the onboard XIAO RGB LED for Feral status indications.
+
+config FERAL_RGBLED_STATUS_STARTUP_BLINK
+    bool "Blink XIAO LED on startup"
+    default y
+    depends on FERAL_RGBLED_STATUS
+    help
+      Blink the onboard XIAO red LED briefly during startup.
+
+config FERAL_RGBLED_STATUS_BATTERY_BLINK_ON_MS
+    int "Battery blink on duration in milliseconds"
+    default 180
+    depends on FERAL_RGBLED_STATUS
+    help
+      How long each battery blink stays lit.
+
+config FERAL_RGBLED_STATUS_BATTERY_BLINK_OFF_MS
+    int "Battery blink off duration in milliseconds"
+    default 180
+    depends on FERAL_RGBLED_STATUS
+    help
+      How long each battery blink stays dark between pulses.

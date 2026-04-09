@@ -6,6 +6,14 @@
 #include "../../shared/base.keymap"
 
 / {
+    behaviors {
+        fbat: fbat {
+            compatible = "zmk,behavior-feral-battery-indicator";
+            #binding-cells = <0>;
+            display-name = "Feral Battery Indicator";
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -134,7 +142,7 @@
              * ,-----------------------------------------------------------------------------------.
              * |QInC  |QWRTY |COLMK |GAME  |USB   | BLE  | BT0  | BT1  | BT2  | BT3  | Clear| Boot |
              * |------+------+------+------+------+------+------+------+------+------+------+------|
-             * |      |      |      | Bri- | Bri+ |      |      |PrevTb|NextTb|      |      |      |
+             * | Batt |      |      | Bri- | Bri+ |      |      |PrevTb|NextTb|      |      |      |
              * |------+------+------+------+------+------+------+------+------+------+------+------|
              * |      |      | Prev | Play | Next |      | Left | Down |  Up  |Right |      |      |
              * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -146,7 +154,7 @@
             display-name = "Raise";
             bindings = <
                 &to Q_IN_C &to QWERTY &to COLEMAK &to GAMING   &out OUT_USB &out OUT_BLE &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_CLR &bootloader
-                &none      &none      &none       &kp C_BRI_DN &kp C_BRI_UP &none  &none     &kp LC(LS(TAB)) &kp LC(TAB)    &none      &none     &none
+                &fbat      &none      &none       &kp C_BRI_DN &kp C_BRI_UP &none  &none     &kp LC(LS(TAB)) &kp LC(TAB)    &none      &none     &none
                 &none      &none      &kp C_PREV  &kp C_PP     &kp C_NEXT &none    &kp LEFT   &kp DOWN        &kp UP         &kp RIGHT  &none     &none
                 &none      &none      &none       &none        &none     &none     &kp HOME   &kp PG_DN       &kp PG_UP      &kp END    &none     &kp C_NEXT
                                                             &none     &none     &kp C_VOL_DN &kp C_VOL_UP

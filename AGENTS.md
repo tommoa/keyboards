@@ -15,6 +15,11 @@ Nix flakes. The primary remote is sourcehut (`master` branch, not
 
 All builds go through Nix. No toolchain installation required.
 
+Because this repo is built as a git flake source, `nix build` only sees
+new files after they are added to the git index. Modified tracked files
+are picked up without committing, but newly created files must be
+`git add`ed first.
+
 Outputs follow the naming convention `<keyboard>-<firmware>` for
 packages and `<keyboard>-<firmware>-<action>` for apps:
 
@@ -68,7 +73,12 @@ firmware that validates the `col2row` matrix wiring.
 - Any Feral ZMK target that reads the shared `zmk/feral/config/feral.conf`
   must include the local `feral/startup-led` ZMK module via
   `-DZMK_EXTRA_MODULES=...`, or Kconfig will fail on
-  `CONFIG_FERAL_STARTUP_LED_BLINK`.
+  `CONFIG_FERAL_RGBLED_STATUS`.
+- For out-of-tree ZMK behaviors shipped through `feral/startup-led`, keep
+  `list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})` in the module
+  `CMakeLists.txt` so Zephyr finds custom devicetree bindings, and add
+  `zephyr_library_include_directories(${APPLICATION_SOURCE_DIR}/include)`
+  so the module can include ZMK's `app/include/drivers/behavior.h`.
 - `feral-zmk` uses `buildSplitKeyboard` and outputs `zmk_left.uf2`
   and `zmk_right.uf2`. The left half is the ZMK split central and the
   right half is the peripheral.

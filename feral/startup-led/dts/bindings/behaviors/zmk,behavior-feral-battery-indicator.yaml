@@ -1,0 +1,6 @@
+# Copyright (c) 2026 Tom Almeida
+# SPDX-License-Identifier: MIT
+
+description: Feral battery indicator behavior
+compatible: "zmk,behavior-feral-battery-indicator"
+include: zero_param.yaml
