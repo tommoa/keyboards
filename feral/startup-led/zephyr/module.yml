@@ -1,0 +1,4 @@
+name: feral-startup-led
+build:
+  cmake: .
+  kconfig: Kconfig

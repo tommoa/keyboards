@@ -1,0 +1,6 @@
+config FERAL_STARTUP_LED_BLINK
+    bool "Blink XIAO LED on startup"
+    default n
+    depends on GPIO
+    help
+      Blink the onboard XIAO LED briefly during startup.
