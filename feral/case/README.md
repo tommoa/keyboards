@@ -46,6 +46,8 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 - Item 2 is fixed when the affected shell reports no bottom-side cavity breach at the chosen wall width. The script defaults that minimum printable wall to `0.45 mm`.
 - Use `python3 feral/case/scripts/check_jst_relief.py` to verify that the JST through-hole posts do not collide with the opposite shell.
 - The JST relief check exports the overlap between the opposite shell and a conservative post-protrusion envelope based on the JST PH right-angle post length. Item 3 is fixed when both hands report no overlap.
+- Use `python3 feral/case/scripts/check_aux_switch_support.py` to verify that the switch-side shell clears the reset and power switch bodies.
+- The aux-support check exports the direct overlap between the switch-side shell and the switch body envelopes. Item 4 is fixed when both hands report no overlap.
 
 ## Component preview placement
 

@@ -128,6 +128,11 @@ firmware that validates the `col2row` matrix wiring.
   It exports the overlap between the opposite shell and a conservative
   JST PH post-protrusion envelope derived from the connector post length.
   Item 3 is fixed when both hands report no overlap.
+- For shared aux-support placement checks, use
+  `python3 feral/case/scripts/check_aux_switch_support.py`.
+  It exports the direct overlap between the switch-side shell and the
+  reset/power switch body envelopes. Item 4 is fixed when both hands
+  report no overlap.
 - The Feral case preview can source PCB-mounted component positions from
   `feral/feral.kicad_pcb` via
   `python3 feral/case/scripts/extract_component_positions.py`, which
