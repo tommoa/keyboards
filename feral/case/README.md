@@ -39,6 +39,8 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 
 - Use `python3 feral/case/scripts/check_clearances.py` to check the current standoff radii in `feral/case/cad/feral_case.scad` against the `PG1350` hotswap footprint features in `feral/feral.kicad_pcb`.
 - The script reports the nearest hotswap feature for each mounting-hole boss and the minimum clearance across all bosses.
+- Use `python3 feral/case/scripts/check_usb_clearance.py` to validate both the XIAO USB shell opening and a standard USB-C plug overmold envelope against the current case throat.
+- The USB check also treats the left-half lower shell as an obstruction unless `top_usb_bottom_shell_relief_height` opens the split line enough for the cable envelope to pass.
 
 ## Component preview placement
 

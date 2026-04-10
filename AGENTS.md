@@ -109,12 +109,13 @@ firmware that validates the `col2row` matrix wiring.
 - For Feral USB opening checks, use
   `python3 feral/case/scripts/check_usb_clearance.py [--min-clearance 0.3]`.
   It analytically checks both the `left/top` and `right/bottom` USB
-  openings against the current modeled XIAO USB shell envelope, derived
-  from the official XIAO mesh and treated as extending outward to the
-  case edge by default. It reports
+  openings against the current modeled XIAO USB shell envelope and a
+  standard USB-C plug overmold envelope centered on that shell. It reports
   `top`, `bottom`, `left`, `right`, `outward`, and `inward` clearances;
   use `--shell-only` to inspect the board-side shell without the outward
-  extension.
+  extension. On the `left/top` half, cable fit also treats the lower shell
+  as an obstruction unless `top_usb_bottom_shell_relief_height` opens the
+  split line enough for the plug envelope to pass.
 - The Feral case preview can source PCB-mounted component positions from
   `feral/feral.kicad_pcb` via
   `python3 feral/case/scripts/extract_component_positions.py`, which

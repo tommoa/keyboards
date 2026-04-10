@@ -106,9 +106,11 @@ component_pod_turn_radius = 4.5;
 component_pod_roof_thickness = 1.0;
 component_pod_mask_pad = 24.0;
 top_usb_opening_z = top_plate_thickness - top_shell_overlap - 0.05;
-usb_opening_height = component_pod_blister_height - component_pod_roof_thickness + 0.1;
-bottom_usb_opening_z = -0.2;
-top_usb_opening_extra_above = 0.4;
+top_usb_opening_drop = 2.5;
+usb_opening_height = 7.15;
+bottom_usb_opening_z = -1.32;
+top_usb_opening_extra_above = 0.0;
+top_usb_bottom_shell_relief_height = 1.4;
 top_component_pod_wall_margin = 1.4;
 top_component_pod_keycap_side_inset_x = 1.05;
 top_component_pod_keycap_bottom_inset_x = 0.8;
@@ -194,8 +196,8 @@ usb_cutout_size = [
     xiao_usb_overhang_size[0] + 2 * usb_cutout_margin,
     xiao_usb_overhang_size[1] + 2 * usb_cutout_margin,
 ];
-usb_inner_relief_width = 11.6;
-usb_outer_throat_width = 11.0;
+usb_inner_relief_width = 14.0;
+usb_outer_throat_width = 13.36;
 usb_outer_throat_corner = 0.8;
 bottom_usb_cutout_pos = [usb_cutout_pos[0], usb_cutout_pos[1] + bottom_usb_cutout_toward_keys_shift];
 
@@ -1139,6 +1141,12 @@ module bottom_external_openings_3d() {
             bottom_usb_opening_z,
             usb_opening_height
         );
+    } else if (electronics_side == "top" && top_usb_bottom_shell_relief_height > 0) {
+        usb_opening_3d(
+            usb_cutout_pos,
+            bottom_floor + bottom_inner_height - top_usb_bottom_shell_relief_height,
+            top_usb_bottom_shell_relief_height + 0.1
+        );
     }
 
     aux_outer_relief_3d(
@@ -1155,7 +1163,7 @@ module top_external_openings_3d() {
     if (electronics_side == "top") {
         usb_opening_3d(
             usb_cutout_pos,
-            top_usb_opening_z - 2.0,
+            top_usb_opening_z - top_usb_opening_drop,
             usb_opening_height + top_usb_opening_extra_above
         );
     }

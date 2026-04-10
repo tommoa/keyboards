@@ -20,16 +20,20 @@ SCAD_NAMES = {
     "component_pod_blister_height",
     "component_pod_roof_thickness",
     "component_pod_top_y",
+    "bottom_usb_opening_z",
     "bottom_usb_cutout_toward_keys_shift",
     "pcb_thickness",
     "standoff_height",
     "top_plate_thickness",
+    "top_usb_opening_drop",
     "top_usb_opening_extra_above",
+    "top_usb_bottom_shell_relief_height",
     "top_shell_overlap",
     "usb_cutout_margin",
     "usb_cutout_outward_shift",
     "usb_exit_margin",
     "usb_inner_relief_width",
+    "usb_opening_height",
     "usb_outer_throat_width",
     "xiao_bottom_mesh_offset",
     "xiao_center",
@@ -49,6 +53,11 @@ USB_PART_MIN_X_SPAN = 5.0
 USB_PART_MIN_Y_SPAN = 4.0
 USB_PART_FACE_EPSILON = 0.01
 USB_PART_SELECTION_EPSILON = 0.001
+
+# USB Type-C plug overmold clearance references the common 12.35 x 6.5 mm
+# max cross-section used in the USB Type-C connector spec plug drawings.
+STANDARD_USB_C_PLUG_WIDTH = 12.35
+STANDARD_USB_C_PLUG_HEIGHT = 6.5
 
 
 @dataclass
@@ -266,11 +275,7 @@ def opening_z_range(values: dict[str, object], hand: str) -> Range:
         - scalar(values, "top_shell_overlap")
         - 0.05
     )
-    usb_opening_height = (
-        scalar(values, "component_pod_blister_height")
-        - scalar(values, "component_pod_roof_thickness")
-        + 0.1
-    )
+    usb_opening_height = scalar(values, "usb_opening_height")
     bottom_inner_height = (
         scalar(values, "standoff_height")
         + scalar(values, "pcb_thickness")
@@ -279,7 +284,7 @@ def opening_z_range(values: dict[str, object], hand: str) -> Range:
 
     if hand == "left":
         shell_base = scalar(values, "bottom_floor") + bottom_inner_height
-        local_bottom = top_usb_opening_z - 2.0
+        local_bottom = top_usb_opening_z - scalar(values, "top_usb_opening_drop")
         return Range(
             shell_base + local_bottom,
             shell_base
@@ -289,10 +294,33 @@ def opening_z_range(values: dict[str, object], hand: str) -> Range:
         )
 
     if hand == "right":
-        local_bottom = -0.2
+        local_bottom = scalar(values, "bottom_usb_opening_z")
         return Range(local_bottom, local_bottom + usb_opening_height)
 
     raise ValueError(f"Unsupported hand: {hand}")
+
+
+def cable_opening_z_range(values: dict[str, object], hand: str) -> Range:
+    opening_z = opening_z_range(values, hand)
+    if hand == "right":
+        return opening_z
+
+    shell_base = scalar(values, "bottom_floor") + (
+        scalar(values, "standoff_height")
+        + scalar(values, "pcb_thickness")
+        + scalar(values, "bottom_wall_above_pcb")
+    )
+    relief_height = scalar(values, "top_usb_bottom_shell_relief_height")
+    if relief_height <= 0:
+        return Range(shell_base, opening_z.maximum)
+    return Range(min(opening_z.minimum, shell_base - relief_height), opening_z.maximum)
+
+
+def outer_throat_x_range(values: dict[str, object], opening_pos: list[float]) -> Range:
+    opening_size = usb_cutout_size(values)
+    outer_width = scalar(values, "usb_outer_throat_width")
+    outer_x = opening_pos[0] + (opening_size[0] - outer_width) / 2
+    return Range(outer_x, outer_x + outer_width)
 
 
 def pcb_planes(values: dict[str, object]) -> tuple[float, float]:
@@ -497,6 +525,62 @@ def analyze_hand(
     )
 
 
+def analyze_cable_fit(
+    parts: dict[str, list[tuple[float, float, float]]],
+    values: dict[str, object],
+    component_values: dict[str, object],
+    hand: str,
+    cable_width: float,
+    cable_height: float,
+) -> OpeningReport:
+    source_part, shell_vertices = select_usb_shell_vertices(
+        parts, values, component_values, hand
+    )
+    opening_pos = opening_position_for_hand(values, hand)
+    opening_size = usb_cutout_size(values)
+    opening_z = cable_opening_z_range(values, hand)
+    outer_start_y = scalar(values, "component_pod_top_y") - scalar(
+        values, "usb_exit_margin"
+    )
+    outer_end_y = opening_pos[1] + opening_size[1]
+
+    outer_vertices = [
+        vertex
+        for vertex in shell_vertices
+        if outer_start_y - USB_PART_SELECTION_EPSILON
+        <= vertex[1]
+        <= outer_end_y + USB_PART_SELECTION_EPSILON
+    ]
+    if not outer_vertices:
+        raise RuntimeError(
+            f"No USB shell vertices remained inside the cable throat for {hand}"
+        )
+
+    shell_x_bounds, _, shell_z_bounds = bounds(outer_vertices)
+    shell_x_center = (shell_x_bounds.minimum + shell_x_bounds.maximum) / 2
+    shell_z_center = (shell_z_bounds.minimum + shell_z_bounds.maximum) / 2
+    cable_x = Range(
+        shell_x_center - cable_width / 2,
+        shell_x_center + cable_width / 2,
+    )
+    cable_z = Range(
+        shell_z_center - cable_height / 2,
+        shell_z_center + cable_height / 2,
+    )
+    throat_x = outer_throat_x_range(values, opening_pos)
+
+    return OpeningReport(
+        label=("left/top" if hand == "left" else "right/bottom") + " cable",
+        source_part=f"{source_part} centered {cable_width:.2f} x {cable_height:.2f} mm envelope",
+        top_clearance=opening_z.maximum - cable_z.maximum,
+        bottom_clearance=cable_z.minimum - opening_z.minimum,
+        left_clearance=cable_x.minimum - throat_x.minimum,
+        right_clearance=throat_x.maximum - cable_x.maximum,
+        outward_clearance=0.0,
+        inward_clearance=0.0,
+    )
+
+
 def format_report(report: OpeningReport, min_clearance: float) -> str:
     worst_axis, worst_value = report.worst_axis()
     status = "PASS" if worst_value + 1e-9 >= min_clearance else "FAIL"
@@ -517,7 +601,7 @@ def format_report(report: OpeningReport, min_clearance: float) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Check analytical USB-clearance margins for the Feral case"
+        description="Check analytical USB shell and cable-fit margins for the Feral case"
     )
     parser.add_argument(
         "--hand",
@@ -531,6 +615,28 @@ def main() -> int:
         type=float,
         default=0.3,
         help="Required minimum clearance in mm for pass/fail reporting",
+    )
+    parser.add_argument(
+        "--usb-cable-width",
+        type=float,
+        default=STANDARD_USB_C_PLUG_WIDTH,
+        help="USB-C plug overmold width to validate against in mm",
+    )
+    parser.add_argument(
+        "--usb-cable-height",
+        type=float,
+        default=STANDARD_USB_C_PLUG_HEIGHT,
+        help="USB-C plug overmold height to validate against in mm",
+    )
+    parser.add_argument(
+        "--skip-shell-fit",
+        action="store_true",
+        help="Skip the existing XIAO shell clearance check",
+    )
+    parser.add_argument(
+        "--skip-cable-fit",
+        action="store_true",
+        help="Skip the USB-C cable plug envelope check",
     )
     parser.add_argument(
         "--shell-only",
@@ -548,10 +654,27 @@ def main() -> int:
     parts = local_mesh_vertices(values, scad_dir / "generated" / "xiao-nrf52840-parts")
     hands = args.hands or ["left", "right"]
 
-    reports = [
-        analyze_hand(parts, values, component_values, hand, args.shell_only)
-        for hand in hands
-    ]
+    reports: list[OpeningReport] = []
+    for hand in hands:
+        if not args.skip_shell_fit:
+            reports.append(
+                analyze_hand(parts, values, component_values, hand, args.shell_only)
+            )
+        if not args.skip_cable_fit:
+            reports.append(
+                analyze_cable_fit(
+                    parts,
+                    values,
+                    component_values,
+                    hand,
+                    args.usb_cable_width,
+                    args.usb_cable_height,
+                )
+            )
+
+    if not reports:
+        raise SystemExit("No checks selected; remove a --skip-* flag")
+
     print("\n\n".join(format_report(report, args.min_clearance) for report in reports))
 
     return (
