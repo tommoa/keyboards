@@ -44,6 +44,8 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 - Use `python3 feral/case/scripts/check_aux_openings.py --hand right --shell bottom` to verify that the bottom shell keeps a printable closed wall near the USB/aux area.
 - The aux-opening check exports the bottom-side electronics cavity footprint that falls outside a required closed-wall band and fails if any of that breach remains.
 - Item 2 is fixed when the affected shell reports no bottom-side cavity breach at the chosen wall width. The script defaults that minimum printable wall to `0.45 mm`.
+- Use `python3 feral/case/scripts/check_jst_relief.py` to verify that the JST through-hole posts do not collide with the opposite shell.
+- The JST relief check exports the overlap between the opposite shell and a conservative post-protrusion envelope based on the JST PH right-angle post length. Item 3 is fixed when both hands report no overlap.
 
 ## Component preview placement
 

@@ -123,6 +123,11 @@ firmware that validates the `col2row` matrix wiring.
   any breach remains. Item 2 is fixed when the affected shell reports no
   cavity breach at the chosen wall width. The checker defaults that wall
   threshold to `0.45 mm`.
+- For JST opposite-side relief checks, use
+  `python3 feral/case/scripts/check_jst_relief.py`.
+  It exports the overlap between the opposite shell and a conservative
+  JST PH post-protrusion envelope derived from the connector post length.
+  Item 3 is fixed when both hands report no overlap.
 - The Feral case preview can source PCB-mounted component positions from
   `feral/feral.kicad_pcb` via
   `python3 feral/case/scripts/extract_component_positions.py`, which

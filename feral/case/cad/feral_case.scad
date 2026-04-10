@@ -151,6 +151,15 @@ jst_size = [5.9, 7.6];
 jst_corner = 0.6;
 jst_cavity_height = 5.1;
 jst_blister_height = 5.3;
+jst_post_pitch = 2.0;
+jst_post_pad_size = [1.7, 1.2];
+jst_post_relief_size = [jst_post_pitch + jst_post_pad_size[0], jst_post_pad_size[1]];
+jst_post_relief_corner = 0.3;
+jst_post_relief_clearance = 0.2;
+jst_post_relief_height = 2.0;
+jst_opposite_relief_link_size = [3.2, 3.2];
+jst_opposite_relief_link_corner = 0.35;
+jst_top_opposite_relief_height = top_plate_thickness + component_pod_blister_height - component_pod_roof_thickness;
 
 wire_channel_center = [202.7, 84.0];
 wire_channel_size = [4.5, 10.0];
@@ -678,6 +687,55 @@ module jst_geometry_2d(size_expand, radius_expand) {
                 );
 }
 
+module jst_post_relief_geometry_2d(size_expand = 0, radius_expand = 0) {
+    translate(kicad_jst_at)
+        rotate(-kicad_jst_rotation)
+            rounded_rect_2d(
+                [
+                    jst_post_relief_size[0] + 2 * size_expand,
+                    jst_post_relief_size[1] + 2 * size_expand,
+                ],
+                jst_post_relief_corner + radius_expand
+            );
+}
+
+module jst_opposite_relief_geometry_2d(size_expand = 0, radius_expand = 0) {
+    anchor = [
+        (kicad_jst_at[0] + kicad_xiao_at[0]) / 2,
+        (kicad_jst_at[1] + kicad_xiao_at[1]) / 2,
+    ];
+    bridge_delta = [anchor[0] - kicad_jst_at[0], anchor[1] - kicad_jst_at[1]];
+    bridge_length = sqrt(bridge_delta[0] * bridge_delta[0] + bridge_delta[1] * bridge_delta[1]);
+    bridge_center = [
+        (kicad_jst_at[0] + anchor[0]) / 2,
+        (kicad_jst_at[1] + anchor[1]) / 2,
+    ];
+    bridge_rotation = atan2(bridge_delta[1], bridge_delta[0]);
+
+    union() {
+        jst_post_relief_geometry_2d(size_expand, radius_expand);
+
+        oriented_rounded_rect_2d(
+            bridge_center,
+            [
+                bridge_length + jst_opposite_relief_link_size[0] + 2 * size_expand,
+                jst_opposite_relief_link_size[1] + 2 * size_expand,
+            ],
+            jst_opposite_relief_link_corner + radius_expand,
+            bridge_rotation
+        );
+
+        translate(anchor)
+            rounded_rect_2d(
+                [
+                    jst_opposite_relief_link_size[0] + 2 * size_expand,
+                    jst_opposite_relief_link_size[1] + 2 * size_expand,
+                ],
+                jst_opposite_relief_link_corner + radius_expand
+            );
+    }
+}
+
 module wire_channel_geometry_2d(size_expand, radius_expand) {
     hull() {
         translate([jst_center[0] + 1.8, jst_center[1] + 3.5])
@@ -815,6 +873,30 @@ module jst_model_3d(face) {
         jst_model_geometry_2d();
 }
 
+module jst_post_relief_assembly_3d(face) {
+    face_component_3d(face, jst_post_relief_height)
+        jst_post_relief_geometry_2d(
+            jst_post_relief_clearance,
+            jst_post_relief_clearance
+        );
+}
+
+module jst_joined_opposite_relief_assembly_3d(face) {
+    face_component_3d(face, jst_top_opposite_relief_height)
+        jst_opposite_relief_geometry_2d(
+            jst_post_relief_clearance,
+            jst_post_relief_clearance
+        );
+}
+
+module bottom_jst_opposite_relief_3d() {
+}
+
+module top_jst_opposite_relief_3d() {
+    translate([0, 0, -(bottom_floor + bottom_inner_height)])
+        jst_joined_opposite_relief_assembly_3d("top");
+}
+
 module reset_switch_model_3d() {
     face_component_3d(
         battery_side,
@@ -920,6 +1002,21 @@ module top_jst_model_outside_pod_footprint_3d() {
             jst_model_geometry_2d();
             top_component_pod_outer_2d(0, 0);
         }
+}
+
+module jst_opposite_relief_overlap_3d() {
+    opposite_face = battery_side == "top" ? "bottom" : "top";
+
+    intersection() {
+        if (opposite_face == "bottom") {
+            bottom_shell();
+        } else {
+            translate([0, 0, bottom_floor + bottom_inner_height])
+                top_shell(false);
+        }
+
+        jst_post_relief_assembly_3d(opposite_face);
+    }
 }
 
 module top_wire_cavity_outside_pod_footprint_3d() {
@@ -1299,6 +1396,8 @@ module top_shell(include_skirt = false) {
             if (enable_top_wire_cavity) {
                 top_wire_cavity_3d();
             }
+        } else {
+            top_jst_opposite_relief_3d();
         }
         top_external_openings_3d();
     }
@@ -1393,6 +1492,9 @@ if (part == "bottom") {
 } else if (part == "top-jst-model-outside-pod-footprint") {
     handed()
         top_jst_model_outside_pod_footprint_3d();
+} else if (part == "jst-opposite-relief-overlap") {
+    handed()
+        jst_opposite_relief_overlap_3d();
 } else if (part == "top-wire-cavity-outside-pod-footprint") {
     handed()
         top_wire_cavity_outside_pod_footprint_3d();
