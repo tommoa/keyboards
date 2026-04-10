@@ -60,6 +60,7 @@ top_skirt_depth = joint_depth;
 top_wall = 2.2;
 top_inner_clearance = 0.35;
 top_shell_overlap = 0.05;
+closed_shell_wall_min = 0.45;
 
 xiao_center = [211.6, 57.0];
 xiao_size = [18.5, 23.0];
@@ -299,6 +300,11 @@ module outer_outline_2d() {
 module inner_cavity_2d() {
     offset(delta = pcb_edge_clearance)
         board_outline_2d();
+}
+
+module closed_shell_safe_region_2d() {
+    offset(delta = -closed_shell_wall_min)
+        outer_outline_2d();
 }
 
 module bottom_joint_outer_2d() {
@@ -948,12 +954,16 @@ module bottom_component_pod_blister_3d() {
 }
 
 module bottom_component_pod_cavity_2d() {
-    pod_cavity_geometry_2d(
-        electronics_side == "bottom" ? "electronics" :
-        battery_side == "bottom" ? "battery" :
-        "none",
-        "bottom"
-    );
+    intersection() {
+        pod_cavity_geometry_2d(
+            electronics_side == "bottom" ? "electronics" :
+            battery_side == "bottom" ? "battery" :
+            "none",
+            "bottom"
+        );
+
+        closed_shell_safe_region_2d();
+    }
 }
 
 module bottom_component_pod_cavity_3d() {
@@ -1059,10 +1069,35 @@ module top_wire_cavity_3d() {
             wire_channel_geometry_2d(battery_clearance, battery_clearance);
 }
 
+module bottom_xiao_cavity_2d() {
+    intersection() {
+        xiao_geometry_2d(0.5, 0.5);
+        closed_shell_safe_region_2d();
+    }
+}
+
 module bottom_xiao_cavity_3d() {
     translate([0, 0, -0.1])
         linear_extrude(height = xiao_cavity_height + 0.1)
-            xiao_geometry_2d(0.5, 0.5);
+            bottom_xiao_cavity_2d();
+}
+
+module bottom_electronics_cavity_outside_safe_wall_footprint_3d() {
+    linear_extrude(height = 1)
+        difference() {
+            union() {
+                if (electronics_side == "bottom") {
+                    bottom_component_pod_cavity_2d();
+                    bottom_xiao_cavity_2d();
+                }
+
+                if (battery_side == "bottom") {
+                    bottom_component_pod_cavity_2d();
+                }
+            }
+
+            closed_shell_safe_region_2d();
+        }
 }
 
 module top_xiao_cavity_3d() {
@@ -1361,6 +1396,9 @@ if (part == "bottom") {
 } else if (part == "top-wire-cavity-outside-pod-footprint") {
     handed()
         top_wire_cavity_outside_pod_footprint_3d();
+} else if (part == "bottom-electronics-cavity-outside-safe-wall-footprint") {
+    handed()
+        bottom_electronics_cavity_outside_safe_wall_footprint_3d();
 } else if (part == "preview-electronics") {
     handed()
         preview_electronics_view();

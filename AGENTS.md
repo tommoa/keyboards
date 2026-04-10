@@ -116,6 +116,13 @@ firmware that validates the `col2row` matrix wiring.
   extension. On the `left/top` half, cable fit also treats the lower shell
   as an obstruction unless `top_usb_bottom_shell_relief_height` opens the
   split line enough for the plug envelope to pass.
+- For the USB/aux-side wall breach check, use
+  `python3 feral/case/scripts/check_aux_openings.py --hand right --shell bottom`.
+  It exports the bottom-side electronics cavity footprint that falls
+  outside a required closed-wall band near the USB/aux area and fails if
+  any breach remains. Item 2 is fixed when the affected shell reports no
+  cavity breach at the chosen wall width. The checker defaults that wall
+  threshold to `0.45 mm`.
 - The Feral case preview can source PCB-mounted component positions from
   `feral/feral.kicad_pcb` via
   `python3 feral/case/scripts/extract_component_positions.py`, which

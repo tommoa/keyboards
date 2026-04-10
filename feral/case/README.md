@@ -41,6 +41,9 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 - The script reports the nearest hotswap feature for each mounting-hole boss and the minimum clearance across all bosses.
 - Use `python3 feral/case/scripts/check_usb_clearance.py` to validate both the XIAO USB shell opening and a standard USB-C plug overmold envelope against the current case throat.
 - The USB check also treats the left-half lower shell as an obstruction unless `top_usb_bottom_shell_relief_height` opens the split line enough for the cable envelope to pass.
+- Use `python3 feral/case/scripts/check_aux_openings.py --hand right --shell bottom` to verify that the bottom shell keeps a printable closed wall near the USB/aux area.
+- The aux-opening check exports the bottom-side electronics cavity footprint that falls outside a required closed-wall band and fails if any of that breach remains.
+- Item 2 is fixed when the affected shell reports no bottom-side cavity breach at the chosen wall width. The script defaults that minimum printable wall to `0.45 mm`.
 
 ## Component preview placement
 
