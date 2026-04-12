@@ -133,6 +133,19 @@ firmware that validates the `col2row` matrix wiring.
   It exports the direct overlap between the switch-side shell and the
   reset/power switch body envelopes. Item 4 is fixed when both hands
   report no overlap.
+- For aux switch height checks, use
+  `python3 feral/case/scripts/check_aux_switch_height.py`.
+  It reports the switch opening/body `z` ranges plus the lower and upper
+  clearances for each hand. Item 5 is fixed when both clearances stay
+  within the configured band; the checker defaults that band to
+  `0.15..0.30 mm`.
+- For aux switch lateral gap checks, use
+  `python3 feral/case/scripts/check_aux_switch_lateral_clearance.py`.
+  It analytically reports `top`, `bottom`, `pod-side`, and `edge-side`
+  clearances from each switch body to both the through opening and the
+  switch-side outer relief, for both hands. Use it to identify which side
+  of the reset/power cutout is still visually too open before changing the
+  CAD.
 - The Feral case preview can source PCB-mounted component positions from
   `feral/feral.kicad_pcb` via
   `python3 feral/case/scripts/extract_component_positions.py`, which

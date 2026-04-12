@@ -35,7 +35,6 @@ pcb_edge_clearance = 0.4;
 joint_depth = 1.4;
 joint_inset = 0.8;
 joint_clearance = 0.25;
-bottom_lip_height = 0.6;
 top_recess_depth = 0.6;
 bottom_lip_pod_clearance = 0.8;
 bottom_extra_depth = 2.0;
@@ -197,12 +196,10 @@ power_switch_body_height = 1.4;
 power_switch_slider_size = [1.5, 1.3];
 power_switch_slider_offset = [0, -2.0];
 power_switch_slider_height = 1.6;
-aux_switch_clearance = 0.2;
-top_aux_opening_height =
-    top_skirt_depth
-    + max(reset_switch_body_height, power_switch_body_height)
-    - bottom_wall_above_pcb
-    + aux_switch_clearance;
+aux_switch_clearance = 0.3;
+aux_switch_opening_height = max(reset_switch_body_height, power_switch_body_height) + 2 * aux_switch_clearance;
+bottom_aux_opening_z = bottom_floor + standoff_height - max(reset_switch_body_height, power_switch_body_height) - aux_switch_clearance;
+top_aux_opening_z = -bottom_wall_above_pcb - aux_switch_clearance;
 
 usb_cutout_pos = [
     xiao_center[0] + xiao_usb_overhang_pos[0] - usb_cutout_margin + usb_cutout_outward_shift,
@@ -238,7 +235,10 @@ aux_recess_side_lobe_height = 6.0;
 aux_recess_center_lobe_height = 7.0;
 aux_recess_corner = 1.0;
 aux_outer_relief_depth = 1.8;
-aux_outer_relief_expand = 0.8;
+aux_outer_relief_expand_x = 0.8;
+aux_outer_relief_expand_y = 0.4;
+bottom_aux_inner_return_wall = 1.2;
+bottom_aux_inner_return_wall_end_extend = 0.8;
 electronics_crop_min = [component_pod_inner_x - 8.0, component_pod_top_y - 6.0, -bottom_extra_depth - 0.5];
 electronics_crop_max = [edge_exit_x + edge_exit_width + 2.0, 86.0, bottom_floor + bottom_inner_height + top_plate_thickness + component_pod_blister_height + 0.5];
 
@@ -324,19 +324,6 @@ module closed_shell_safe_region_2d() {
 module bottom_joint_outer_2d() {
     offset(delta = bottom_wall - joint_inset)
         board_outline_2d();
-}
-
-module bottom_lip_profile_2d() {
-    difference() {
-        bottom_joint_outer_2d();
-
-        // Do not run the locating lip anywhere through the electronics region.
-        translate([electronics_crop_min[0], electronics_crop_min[1]])
-            square([
-                electronics_crop_max[0] - electronics_crop_min[0],
-                electronics_crop_max[1] - electronics_crop_min[1],
-            ]);
-    }
 }
 
 module top_skirt_outer_2d() {
@@ -466,19 +453,21 @@ module battery_cluster_geometry_2d(
             wire_channel_geometry_2d(size_expand, radius_expand);
             battery_geometry_2d(size_expand, radius_expand);
 
-            aux_switch_geometry_2d(
-                reset_switch_origin,
-                reset_aux_switch_body_size_local,
-                size_expand,
-                radius_expand
-            );
+            if (reset_aux_switch_body_size_local[0] > 0 && reset_aux_switch_body_size_local[1] > 0)
+                aux_switch_geometry_2d(
+                    reset_switch_origin,
+                    reset_aux_switch_body_size_local,
+                    size_expand,
+                    radius_expand
+                );
 
-            aux_switch_geometry_2d(
-                power_switch_origin,
-                power_aux_switch_body_size_local,
-                size_expand,
-                radius_expand
-            );
+            if (power_aux_switch_body_size_local[0] > 0 && power_aux_switch_body_size_local[1] > 0)
+                aux_switch_geometry_2d(
+                    power_switch_origin,
+                    power_aux_switch_body_size_local,
+                    size_expand,
+                    radius_expand
+                );
 
             hull() {
                 translate([jst_center[0] + 3.0, jst_center[1] + 4.0])
@@ -513,8 +502,8 @@ module pod_cavity_geometry_2d(side, shell) {
             battery_cluster_geometry_2d(
                 1.0,
                 1.0,
-                shell == "top" ? reset_cutout_size : aux_switch_body_size,
-                shell == "top" ? power_cutout_size : aux_switch_body_size
+                [0, 0],
+                [0, 0]
             );
         }
     }
@@ -574,23 +563,84 @@ module aux_edge_window_2d(pos, size) {
         square([edge_exit_x + aux_edge_exit_width - pos[0], size[1]]);
 }
 
-module shared_aux_recess_2d() {
+module aux_recess_edge_lobe_2d(center_y, height) {
+    rounded_rect_pos_2d(
+        [
+            edge_exit_x + (aux_edge_exit_width - aux_recess_edge_lobe_width) / 2,
+            center_y - height / 2,
+        ],
+        [aux_recess_edge_lobe_width, height],
+        aux_recess_corner
+    );
+}
+
+module aux_recess_switch_window_2d(pos, size, edge_lobe_height) {
+    edge_lobe_pos = [
+        edge_exit_x + (aux_edge_exit_width - aux_recess_edge_lobe_width) / 2,
+        pos[1] + (size[1] - edge_lobe_height) / 2,
+    ];
+    connector_pos = [pos[0] + size[0], edge_lobe_pos[1]];
+    connector_width = edge_lobe_pos[0] - connector_pos[0];
+
     union() {
-        aux_edge_window_2d(reset_cutout_pos, reset_cutout_size);
-        aux_edge_window_2d(power_cutout_pos, power_cutout_size);
+        rounded_rect_pos_2d(pos, size, aux_recess_corner);
+
+        if (connector_width > 0)
+            translate(connector_pos)
+                square([connector_width, edge_lobe_height]);
+
+        rounded_rect_pos_2d(
+            edge_lobe_pos,
+            [aux_recess_edge_lobe_width, edge_lobe_height],
+            aux_recess_corner
+        );
+    }
+}
+
+module expanded_aux_edge_window_2d(pos, size, expand_x, expand_y) {
+    translate([pos[0] - expand_x, pos[1] - expand_y])
+        square([
+            edge_exit_x + aux_edge_exit_width - pos[0] + 2 * expand_x,
+            size[1] + 2 * expand_y,
+        ]);
+}
+
+module shared_aux_recess_2d() {
+    center_lobe_center_y = (reset_switch_origin[1] + power_switch_origin[1]) / 2;
+
+    union() {
+        aux_recess_switch_window_2d(
+            reset_cutout_pos,
+            reset_cutout_size,
+            aux_recess_side_lobe_height
+        );
+        aux_recess_switch_window_2d(
+            power_cutout_pos,
+            power_cutout_size,
+            aux_recess_side_lobe_height
+        );
+        aux_recess_edge_lobe_2d(center_lobe_center_y, aux_recess_center_lobe_height);
     }
 }
 
 module shared_aux_outer_relief_2d() {
-    connector_top_y = reset_cutout_pos[1] + reset_cutout_size[1] + aux_outer_relief_expand;
-    connector_bottom_y = power_cutout_pos[1] - aux_outer_relief_expand;
+    connector_top_y = reset_cutout_pos[1] + reset_cutout_size[1] + aux_outer_relief_expand_y;
+    connector_bottom_y = power_cutout_pos[1] - aux_outer_relief_expand_y;
 
     union() {
-        offset(delta = aux_outer_relief_expand)
-            aux_edge_window_2d(reset_cutout_pos, reset_cutout_size);
+        expanded_aux_edge_window_2d(
+            reset_cutout_pos,
+            reset_cutout_size,
+            aux_outer_relief_expand_x,
+            aux_outer_relief_expand_y
+        );
 
-        offset(delta = aux_outer_relief_expand)
-            aux_edge_window_2d(power_cutout_pos, power_cutout_size);
+        expanded_aux_edge_window_2d(
+            power_cutout_pos,
+            power_cutout_size,
+            aux_outer_relief_expand_x,
+            aux_outer_relief_expand_y
+        );
 
         if (connector_bottom_y > connector_top_y)
             translate([edge_exit_x - aux_outer_relief_depth, connector_top_y])
@@ -605,11 +655,20 @@ module aux_outer_relief_2d() {
     if (use_shared_aux_recess) {
         shared_aux_outer_relief_2d();
     } else {
-        offset(delta = aux_outer_relief_expand)
-            union() {
-                aux_edge_window_2d(reset_cutout_pos, reset_cutout_size);
-                aux_edge_window_2d(power_cutout_pos, power_cutout_size);
-            }
+        union() {
+            expanded_aux_edge_window_2d(
+                reset_cutout_pos,
+                reset_cutout_size,
+                aux_outer_relief_expand_x,
+                aux_outer_relief_expand_y
+            );
+            expanded_aux_edge_window_2d(
+                power_cutout_pos,
+                power_cutout_size,
+                aux_outer_relief_expand_x,
+                aux_outer_relief_expand_y
+            );
+        }
     }
 }
 
@@ -1146,8 +1205,8 @@ module top_battery_blister_3d() {
 }
 
 module top_component_pod_blister_3d() {
-    translate([0, 0, top_plate_thickness - top_shell_overlap])
-        linear_extrude(height = component_pod_blister_height + top_shell_overlap)
+    translate([0, 0, -top_shell_overlap])
+        linear_extrude(height = top_plate_thickness + component_pod_blister_height + top_shell_overlap)
             top_component_pod_outer_2d(0, 0);
 }
 
@@ -1306,6 +1365,38 @@ module aux_outer_relief_3d(z0, height) {
     }
 }
 
+module bottom_power_inner_return_wall_2d() {
+    wall_thickness = bottom_aux_inner_return_wall;
+    aux_stack_min_y = reset_cutout_pos[1] - aux_outer_relief_expand_y - bottom_aux_inner_return_wall_end_extend;
+    aux_stack_max_y = power_cutout_pos[1] + power_cutout_size[1] + aux_outer_relief_expand_y + bottom_aux_inner_return_wall_end_extend;
+    local_region_pos = [
+        edge_exit_x - aux_outer_relief_depth - 2 * wall_thickness,
+        aux_stack_min_y,
+    ];
+    local_region_size = [
+        aux_outer_relief_depth + aux_edge_exit_width + 4 * wall_thickness,
+        aux_stack_max_y - aux_stack_min_y,
+    ];
+
+    intersection() {
+        difference() {
+            inner_cavity_2d();
+
+            offset(delta = -wall_thickness)
+                inner_cavity_2d();
+        }
+
+        translate(local_region_pos)
+            square(local_region_size);
+    }
+}
+
+module bottom_power_inner_return_wall_3d() {
+    translate([0, 0, -bottom_extra_depth])
+        linear_extrude(height = pcb_bottom_z() + bottom_extra_depth)
+            bottom_power_inner_return_wall_2d();
+}
+
 module bottom_external_openings_3d() {
     if (electronics_side == "bottom") {
         usb_opening_3d(
@@ -1327,7 +1418,7 @@ module bottom_external_openings_3d() {
     );
 
     if (battery_side == "bottom") {
-        aux_openings_3d(bottom_floor, bottom_inner_height);
+        aux_openings_3d(bottom_aux_opening_z, aux_switch_opening_height);
     }
 }
 
@@ -1346,7 +1437,7 @@ module top_external_openings_3d() {
     );
 
     if (battery_side == "top") {
-        aux_openings_3d(-top_skirt_depth, top_aux_opening_height);
+        aux_openings_3d(top_aux_opening_z, aux_switch_opening_height);
     }
 }
 
@@ -1366,14 +1457,11 @@ module bottom_shell() {
                     inner_cavity_2d();
                 }
 
-            translate([0, 0, bottom_floor + bottom_inner_height])
-                linear_extrude(height = bottom_lip_height)
-                    difference() {
-                        bottom_lip_profile_2d();
-                        inner_cavity_2d();
-                    }
-
             standoffs_3d();
+
+            if (electronics_side == "bottom") {
+                bottom_power_inner_return_wall_3d();
+            }
         }
 
         screw_holes_3d(

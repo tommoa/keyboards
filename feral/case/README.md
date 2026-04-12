@@ -48,6 +48,10 @@ The case helper outlines in `feral/ergogen/config.yaml` were checked by generati
 - The JST relief check exports the overlap between the opposite shell and a conservative post-protrusion envelope based on the JST PH right-angle post length. Item 3 is fixed when both hands report no overlap.
 - Use `python3 feral/case/scripts/check_aux_switch_support.py` to verify that the switch-side shell clears the reset and power switch bodies.
 - The aux-support check exports the direct overlap between the switch-side shell and the switch body envelopes. Item 4 is fixed when both hands report no overlap.
+- Use `python3 feral/case/scripts/check_aux_switch_height.py` to verify that the switch-side openings keep only a small vertical clearance band around the reset/power switch bodies.
+- The switch-height check reports the opening/body `z` ranges and the lower/upper clearances for each hand. Item 5 is fixed when both clearances stay within the configured band; the script defaults that band to `0.15..0.30 mm`.
+- Use `python3 feral/case/scripts/check_aux_switch_lateral_clearance.py` to inspect the lateral gap around each reset/power switch opening on both hands.
+- The lateral-clearance check reports `top`, `bottom`, `pod-side`, and `edge-side` clearances for both the through opening and the outer relief, so it is easy to see which side is still visually loose before changing the CAD.
 
 ## Component preview placement
 
