@@ -89,9 +89,7 @@ jobs:
       - name: Prepare site
         working-directory: site
         run: |
-          rm -f result/*.yaml result/*.json
-          mv result/*.svg .
-          rmdir result
+          rm -f *.yaml *.json
           {
             echo '<!doctype html><html lang="en"><head><meta charset="utf-8">'
             echo '<title>Feral Keymap</title><style>'
