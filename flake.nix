@@ -227,6 +227,51 @@
             platforms = nixpkgs.lib.platforms.all;
           };
         };
+
+        feral-keymap-assets-src = nixpkgs.lib.cleanSourceWith {
+          src = ./.;
+          filter =
+            path: type:
+            let
+              rel = nixpkgs.lib.removePrefix (toString ./. + "/") (toString path);
+            in
+            if type == "directory" then
+              builtins.match "(feral|feral/scripts|zmk|zmk/feral|zmk/feral/config|zmk/shared)" rel != null
+            else
+              builtins.match "(feral/scripts/generate_keymap_assets\\.py|feral/feral\\.kicad_pcb|zmk/feral/config/feral\\.keymap|zmk/shared/base\\.keymap)" rel
+              != null;
+        };
+
+        feral-keymap-assets = pkgs.stdenvNoCC.mkDerivation {
+          name = "feral-keymap-assets";
+          src = feral-keymap-assets-src;
+          nativeBuildInputs = [
+            pkgs.python3
+            pkgs.keymap-drawer
+          ];
+          dontConfigure = true;
+          dontBuild = true;
+          installPhase = ''
+            runHook preInstall
+
+            export HOME="$TMPDIR/home"
+            mkdir -p "$HOME"
+            mkdir -p "$out"
+
+            export KEYMAP_CMD="${pkgs.keymap-drawer}/bin/keymap"
+            export KEYMAP_ASSET_OUT_DIR="$out"
+
+            ${pkgs.python3}/bin/python3 feral/scripts/generate_keymap_assets.py
+
+            runHook postInstall
+          '';
+          meta = {
+            description = "Slide-ready Feral keymap assets generated from ZMK source";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
       in
       {
         devShells.default = pkgs.mkShell {
@@ -273,6 +318,7 @@
         packages.feral-zmk = feral-zmk;
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
         packages.feral-raw-scan = feral-raw-scan;
+        packages.feral-keymap-assets = feral-keymap-assets;
         packages.feral-pcb = feral.packages.${system}.default;
         packages.feral-case-shell-stls = feral.packages.${system}.case-shell-stls;
 

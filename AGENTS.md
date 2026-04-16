@@ -21,24 +21,8 @@ are picked up without committing, but newly created files must be
 `git add`ed first.
 
 Outputs follow the naming convention `<keyboard>-<firmware>` for
-packages and `<keyboard>-<firmware>-<action>` for apps:
-
-```sh
-nix build .#preonic-qmk          # Build QMK firmware (.hex)
-nix build .#preonic-zmk          # Build ZMK firmware (.bin + .hex)
-nix build .#vortex-core-qmk      # Build Vortex Core QMK firmware (.bin + .hex)
-nix build .#feral-zmk            # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
-nix build .#feral-zmk-diag-col2row # Build Feral ZMK diode/matrix diag (C2R)
-nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app
-nix build .#feral-pcb            # Build Feral Ergogen/KiCad outputs via the sub-flake
-nix build .#feral-case-shell-stls # Render shell-only Feral case STL artifacts
-nix run .#preonic-qmk-flash      # Build + flash QMK via dfu-util
-nix run .#vortex-core-qmk-flash  # Build + flash Vortex Core via pok3rtool
-nix run .#vortex-core-qmk-bootloader # Reboot Vortex Core into bootloader
-nix run .#vortex-core-qmk-unlock # Mass-erase and install unlocked stock firmware via OpenOCD
-nix run .#preonic-zmk-flash      # Flash ZMK via dfu-util
-nix run .#preonic-zmk-update     # Update west.yml pins + zephyrDepsHash
-```
+packages and `<keyboard>-<firmware>-<action>` for apps. Use the root
+`README.md` as the source of truth for the current exposed targets.
 
 ### Formatting and checks
 
@@ -266,6 +250,15 @@ Conventional Commits format: `type(scope): description`
   CI dispatch does not skip the sourcehut mirror.
 - Automated commits use bot identities (`qmk-update-bot`,
   `zmk-update-bot`) with `github-actions[bot]` email
+- **GitHub Pages**: the `deploy-pages` job in `ci.yml` publishes Feral
+  keymap SVGs to `https://tommoa.github.io/keyboards/` after each
+  push to `master`. It depends on the `feral-keymap-assets` job,
+  downloads only the SVGs, generates a minimal `index.html`, and
+  deploys via `actions/deploy-pages@v4`. The `pages: write` and
+  `id-token: write` permissions are scoped to that job only so they
+  don't affect other jobs. The Pages concurrency group is also scoped
+  to that job. The GitHub repo must have Pages enabled with source set
+  to "GitHub Actions" (not "Deploy from a branch").
 
 - The normal split Feral firmware builds as `feral-zmk-left` and
   `feral-zmk-right`. The left half is the ZMK split central and the

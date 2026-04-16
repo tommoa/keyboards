@@ -52,3 +52,59 @@ jobs:
           name: feral-case-shell-stls
           path: result/*.stl
           if-no-files-found: error
+  feral-keymap-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build Feral keymap assets
+        run: nix build .#feral-keymap-assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feral-keymap-assets
+          path: |
+            result/*.svg
+            result/*.yaml
+            result/*.json
+          if-no-files-found: error
+  deploy-pages:
+    needs: feral-keymap-assets
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Download keymap assets
+        uses: actions/download-artifact@v4
+        with:
+          name: feral-keymap-assets
+          path: site
+      - name: Prepare site
+        working-directory: site
+        run: |
+          rm -f result/*.yaml result/*.json
+          mv result/*.svg .
+          rmdir result
+          {
+            echo '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            echo '<title>Feral Keymap</title><style>'
+            echo 'body{font-family:system-ui,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem}'
+            echo 'h1{font-size:1.4rem}ul{list-style:none;padding:0}li{margin:.4rem 0}a{color:#0969da}'
+            echo '</style></head><body><h1>Feral Keymap Assets</h1><ul>'
+            for f in *.svg; do echo "<li><a href=\"$f\">$f</a></li>"; done
+            echo '</ul></body></html>'
+          } > index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

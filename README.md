@@ -4,11 +4,29 @@ Custom keyboard firmware and hardware, built with Nix.
 
 | Keyboard | Firmware | MCU | Status |
 |---|---|---|---|
-| [Preonic rev3 Drop](https://drop.com/buy/preonic-mechanical-keyboard) | QMK, ZMK | STM32F303 | Active |
 | Feral (custom split) | ZMK | 2x Seeed XIAO BLE | Making case |
+| [Preonic rev3 Drop](https://drop.com/buy/preonic-mechanical-keyboard) | QMK, ZMK | STM32F303 | Retired |
 
 Source lives on [sourcehut](https://git.sr.ht/~tommoa/keyboards),
 mirrored to [GitHub](https://github.com/tommoa/keyboards).
+
+## Feral
+
+Custom split keyboard with Choc switches and a 24+2 thumb key layout,
+built from an Ergogen PCB design. ZMK firmware with six layers,
+home-row mods, and layer-tap keys.
+
+### Keymap
+
+![Feral keymap -- QWERTY, Lower, and Raise layers](https://tommoa.github.io/keyboards/feral-keymaps.svg)
+
+Individual layers:
+[QWERTY](https://tommoa.github.io/keyboards/feral-layer-qwerty.svg) |
+[Colemak](https://tommoa.github.io/keyboards/feral-layer-colemak.svg) |
+[Gaming](https://tommoa.github.io/keyboards/feral-layer-gaming.svg) |
+[Q-in-C](https://tommoa.github.io/keyboards/feral-layer-q-in-c.svg) |
+[Lower](https://tommoa.github.io/keyboards/feral-layer-lower.svg) |
+[Raise](https://tommoa.github.io/keyboards/feral-layer-raise.svg)
 
 ## Preonic
 
@@ -27,7 +45,10 @@ keys.
 | 4 | Lower | Symbols, F-keys, right-hand numpad, media |
 | 5 | Raise | Navigation, layer switching, system keys |
 
-### QWERTY
+<details>
+<summary>Preonic keymaps (ASCII)</summary>
+
+#### QWERTY
 
 ```
  `      1      2      3      4      5      6      7      8      9      0    Bksp
@@ -40,7 +61,7 @@ Ctrl   Ctrl   Alt    GUI  Tab/Lwr     Space/Raise x3            Left  Down   Up 
 Hold D for Ctrl, F for GUI, J for GUI, K for Ctrl, Esc for Alt,
 ' for Alt, Enter for Shift. Tapping term: 175 ms.
 
-### Lower (symbols + numpad)
+#### Lower (symbols + numpad)
 
 ```
  ~     F1     F2     F3     F4     F5     F6     F7     F8     F9    F10    F11
@@ -50,7 +71,7 @@ Del     ^      &      *      (      )      -      4      5      6           \
                                                    0    Mute   Vol-  Vol+  Play
 ```
 
-### Raise (navigation + system)
+#### Raise (navigation + system)
 
 ```
 Q_in_C QWRTY  Clmk  Game                                                  Boot
@@ -59,6 +80,8 @@ Q_in_C QWRTY  Clmk  Game                                                  Boot
                                       Home   PgDn   PgUp   End             Next
                                               Mute  Vol-  Vol+  Play
 ```
+
+</details>
 
 ### Notable features
 
@@ -91,18 +114,33 @@ Everything is built with
 [Nix flakes](https://zero-to-nix.com/concepts/flakes). No toolchain
 installation required.
 
-Flake outputs follow the naming convention `<keyboard>-<firmware>`:
+Flake outputs follow the naming convention `<keyboard>-<firmware>`.
+
+### Firmware builds
 
 ```sh
-nix build .#preonic-qmk        # Build QMK firmware
-nix build .#preonic-zmk        # Build ZMK firmware
-nix build .#feral-zmk          # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
-nix build .#feral-zmk-diag-col2row # Build Feral bring-up firmware (C2R)
-nix build .#feral-raw-scan # Build standalone Feral raw GPIO scan app (USB serial bitmasks)
-nix run .#preonic-qmk-flash    # Build and flash via dfu-util
-nix run .#preonic-zmk-update   # Update ZMK west.yml pins + zephyrDepsHash
-nix develop                    # QMK dev shell
-nix fmt                        # Format Nix + YAML files
+nix build .#preonic-qmk               # Build QMK firmware
+nix build .#preonic-zmk               # Build ZMK firmware
+nix build .#feral-zmk                 # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
+nix build .#feral-zmk-diag-col2row    # Build Feral bring-up firmware (C2R)
+nix build .#feral-raw-scan            # Build standalone Feral raw GPIO scan app (USB serial bitmasks)
+```
+
+### Feral hardware and presentation assets
+
+```sh
+nix build .#feral-pcb                 # Build Feral Ergogen/KiCad outputs
+nix build .#feral-case-shell-stls     # Build shell-only Feral case STLs
+nix build .#feral-keymap-assets       # Build slide-ready Feral keymap assets (SVG/YAML/JSON)
+```
+
+### Utilities
+
+```sh
+nix run .#preonic-qmk-flash           # Build and flash via dfu-util
+nix run .#preonic-zmk-update          # Update ZMK west.yml pins + zephyrDepsHash
+nix develop                           # QMK dev shell
+nix fmt                               # Format Nix + YAML files
 ```
 
 To enter DFU mode for flashing, double-tap the reset button (or press
@@ -114,5 +152,6 @@ Actions.
 ## CI
 
 GitHub Actions builds firmware on every push to `master` and runs
-weekly dependency updates for both QMK and ZMK. Sourcehut and GitHub
-are kept in sync bidirectionally.
+weekly dependency updates for both QMK and ZMK. Feral keymap SVGs are
+deployed to [GitHub Pages](https://tommoa.github.io/keyboards/) on
+each push. Sourcehut and GitHub are kept in sync bidirectionally.
