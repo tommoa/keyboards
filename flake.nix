@@ -151,7 +151,8 @@
         feral-zmk = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
           name = "feral-zmk";
           src = feral-zmk-src;
-          board = "xiao_ble";
+          # Use the ZMK board variant so XIAO settings/NVS storage is enabled.
+          board = "xiao_ble//zmk";
           shield = "feral_%PART%";
           config = "feral/config";
           zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
@@ -168,7 +169,7 @@
         feral-zmk-diag-col2row = zmk-nix.legacyPackages.${system}.buildKeyboard {
           name = "feral-zmk-diag-col2row";
           src = feral-zmk-src;
-          board = "xiao_ble";
+          board = "xiao_ble//zmk";
           shield = "feral_diag";
           config = "feral/config";
           zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
