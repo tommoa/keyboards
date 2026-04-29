@@ -18,8 +18,9 @@
 #define COLEMAK 1
 #define GAMING  2
 #define Q_IN_C  3
-#define LOWER   4
-#define RAISE   5
+#define QWERTY_MO 4
+#define LOWER   5
+#define RAISE   6
 
 / {
     behaviors {
