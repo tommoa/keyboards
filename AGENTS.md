@@ -263,6 +263,13 @@ Conventional Commits format: `type(scope): description`
 - The normal split Feral firmware builds as `feral-zmk-left` and
   `feral-zmk-right`. The left half is the ZMK split central and the
   right half is the peripheral.
+- ConnectPro UDP-12AP DDM hotkeys only worked in testing when Feral's USB
+  HID descriptor was reduced to a single boot-keyboard interface with one
+  interrupt IN endpoint, an 8-byte keyboard input report, no report IDs,
+  and no consumer-control report. Normal Feral ZMK firmware intentionally
+  keeps ZMK's keyboard + consumer-control descriptor so media keys continue
+  to work; do not reintroduce a default `usb_hid.c` rewrite for DDM unless
+  the loss of USB consumer/media reports is explicitly accepted.
 ## Architecture notes
 
 - The ZMK board ID for the Preonic is `preonic//zmk` (HWMv2 variant

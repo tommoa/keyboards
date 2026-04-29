@@ -16,6 +16,11 @@ Custom split keyboard with Choc switches and a 24+2 thumb key layout,
 built from an Ergogen PCB design. ZMK firmware with six layers,
 home-row mods, and layer-tap keys.
 
+ConnectPro UDP-12AP DDM hotkeys require a very plain USB boot-keyboard
+descriptor. Feral's normal ZMK firmware keeps USB consumer/media reports
+enabled, so keyboard typing works through the KVM but DDM hotkey parsing
+may not.
+
 ### Keymap
 
 ![Feral keymap -- QWERTY, Lower, and Raise layers](https://tommoa.github.io/keyboards/feral-keymaps.svg)
