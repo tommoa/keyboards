@@ -1,0 +1,4 @@
+name: feral-split-reset
+build:
+  cmake: .
+  kconfig: Kconfig

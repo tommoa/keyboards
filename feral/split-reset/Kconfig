@@ -1,0 +1,7 @@
+config FERAL_SPLIT_RESET_ON_START
+    bool "Feral split reset firmware"
+    default n
+    depends on SETTINGS && ZMK_BLE
+    help
+      Build a dedicated Feral split-reset image that clears only split pairing
+      state for the selected half on startup.

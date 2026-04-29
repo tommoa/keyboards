@@ -1,0 +1,25 @@
+if SHIELD_FERAL_SPLIT_RESET_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Feral Reset L"
+
+config ZMK_USB
+    default n
+
+config ZMK_DISPLAY
+    default n
+
+endif
+
+if SHIELD_FERAL_SPLIT_RESET_RIGHT
+
+config ZMK_KEYBOARD_NAME
+    default "Feral Reset R"
+
+config ZMK_USB
+    default n
+
+config ZMK_DISPLAY
+    default n
+
+endif

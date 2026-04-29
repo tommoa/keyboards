@@ -183,6 +183,37 @@
           };
         };
 
+        feral-zmk-split-reset = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
+          name = "feral-zmk-split-reset";
+          src = feral-zmk-src;
+          board = "xiao_ble//zmk";
+          shield = "feral_split_reset_%PART%";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          extraCmakeFlags = [
+            "-DZMK_EXTRA_MODULES=${./feral/split-reset}"
+          ];
+          meta = {
+            description = "Feral split-pairing reset firmware";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
+        feral-zmk-settings-reset = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-zmk-settings-reset";
+          src = feral-zmk-src;
+          board = "xiao_ble//zmk";
+          shield = "settings_reset";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          meta = {
+            description = "Feral full settings reset firmware";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
         feral-raw-scan = zmk-nix.legacyPackages.${system}.buildZephyrPackage {
           name = "feral-raw-scan";
           src = ./feral/raw-scan;
@@ -318,6 +349,8 @@
         packages.vortex-core-qmk = vortex-core-qmk;
         packages.feral-zmk = feral-zmk;
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
+        packages.feral-zmk-split-reset = feral-zmk-split-reset;
+        packages.feral-zmk-settings-reset = feral-zmk-settings-reset;
         packages.feral-raw-scan = feral-raw-scan;
         packages.feral-keymap-assets = feral-keymap-assets;
         packages.feral-pcb = feral.packages.${system}.default;

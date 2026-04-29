@@ -1,0 +1,5 @@
+config SHIELD_FERAL_SPLIT_RESET_LEFT
+    def_bool $(shields_list_contains,feral_split_reset_left)
+
+config SHIELD_FERAL_SPLIT_RESET_RIGHT
+    def_bool $(shields_list_contains,feral_split_reset_right)

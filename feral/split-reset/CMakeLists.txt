@@ -1,0 +1,5 @@
+if(CONFIG_FERAL_SPLIT_RESET_ON_START)
+  zephyr_library()
+  zephyr_library_include_directories(${APPLICATION_SOURCE_DIR}/include)
+  zephyr_library_sources(src/feral_split_recovery.c)
+endif()
