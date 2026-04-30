@@ -166,6 +166,35 @@
           };
         };
 
+        feral-zmk-connectpro-west-deps =
+          pkgs.runCommand "feral-zmk-connectpro-west-deps" { } ''
+            cp --no-preserve=mode -R ${feral-zmk.westDeps} $out
+            chmod -R u+w $out
+            patch -d $out -p1 < ${./nix/patches/zmk-connectpro-split-hid.patch}
+          ''
+          // {
+            inherit (feral-zmk.westDeps) westRoot;
+          };
+
+        feral-zmk-connectpro = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
+          name = "feral-zmk-connectpro";
+          src = feral-zmk-src;
+          westDeps = feral-zmk-connectpro-west-deps;
+          board = "xiao_ble//zmk";
+          shield = "feral_%PART%";
+          config = "feral/config";
+          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          extraCmakeFlags = [
+            "-DZMK_EXTRA_MODULES=${./feral/startup-led}"
+            "-DEXTRA_CONF_FILE=${./zmk/feral/config/connectpro.conf}"
+          ];
+          meta = {
+            description = "Feral ZMK firmware with ConnectPro split USB HID";
+            license = nixpkgs.lib.licenses.mit;
+            platforms = nixpkgs.lib.platforms.all;
+          };
+        };
+
         feral-zmk-diag-col2row = zmk-nix.legacyPackages.${system}.buildKeyboard {
           name = "feral-zmk-diag-col2row";
           src = feral-zmk-src;
@@ -348,6 +377,7 @@
         packages.preonic-zmk = preonic-zmk;
         packages.vortex-core-qmk = vortex-core-qmk;
         packages.feral-zmk = feral-zmk;
+        packages.feral-zmk-connectpro = feral-zmk-connectpro;
         packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
         packages.feral-zmk-split-reset = feral-zmk-split-reset;
         packages.feral-zmk-settings-reset = feral-zmk-settings-reset;

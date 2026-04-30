@@ -16,10 +16,52 @@ Custom split keyboard with Choc switches and a 24+2 thumb key layout,
 built from an Ergogen PCB design. ZMK firmware with six layers,
 home-row mods, and layer-tap keys.
 
-ConnectPro UDP-12AP DDM hotkeys require a very plain USB boot-keyboard
-descriptor. Feral's normal ZMK firmware keeps USB consumer/media reports
-enabled, so keyboard typing works through the KVM but DDM hotkey parsing
-may not.
+### ConnectPro KVM compatibility
+
+Feral's normal ZMK firmware keeps ZMK's stock combined keyboard and
+consumer-control USB HID descriptor so media keys continue to work on
+regular hosts. The ConnectPro UDP-12AP DDM keyboard port was more
+selective in testing: keyboard typing worked through the KVM, but DDM
+hotkey parsing only worked reliably when the keyboard report was exposed
+as a dedicated boot-keyboard HID interface.
+
+The `feral-zmk-connectpro` target is the UDP-12AP-compatible firmware. It
+patches ZMK locally so USB exposes a report-ID-free keyboard HID descriptor
+on `HID_0` and consumer/media reports on `HID_1`. This keeps media keys
+available while giving the KVM a plain keyboard interface to parse. The
+normal `feral-zmk` target is intentionally unpatched.
+
+The relevant HID 1.11 details are:
+
+- Boot-keyboard interfaces use a predefined 8-byte keyboard input report:
+  modifiers, a reserved byte, and six key slots. See Appendix B.1
+  (Protocol 1: Keyboard) and Appendix F (Legacy Keyboard Implementation).
+- If a HID report descriptor uses any report ID, all reports for that HID
+  device are prefixed with a report-ID byte. A dedicated single-report
+  keyboard HID interface can omit report IDs entirely. See section 5.6
+  (Reports) and section 6.2.2.7 (Global Items, `Report ID`).
+- USB HID permits both combined report-ID-based descriptors and separate
+  HID interfaces. The HID class is defined at the interface level, with
+  subclass/protocol fields identifying boot interfaces. See sections 4.2
+  (Subclass) and 4.3 (Protocols). Zephyr exposes separate HID instances as
+  `HID_0`, `HID_1`, and so on via `CONFIG_USB_HID_DEVICE_COUNT`.
+
+UDP-12AP testing results:
+
+| Change tested | Result |
+|---|---|
+| Split keyboard `HID_0` and consumer/media `HID_1` | Worked |
+| USB boot protocol enabled | Required |
+| HKRO with `CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE=6` | Required |
+| NKRO restored | Failed |
+| USB boot protocol removed | Failed |
+| Full consumer usage reports | Worked |
+| `CONFIG_USB_MAX_POWER=250` | Worked |
+| Default ZMK sleep behavior | Worked |
+
+The minimal ConnectPro-specific configuration is therefore the split HID
+topology plus USB boot protocol and 6KRO/HKRO. Consumer usage narrowing,
+USB power reduction, and disabling sleep were not required.
 
 ### Keymap
 
@@ -127,6 +169,7 @@ Flake outputs follow the naming convention `<keyboard>-<firmware>`.
 nix build .#preonic-qmk               # Build QMK firmware
 nix build .#preonic-zmk               # Build ZMK firmware
 nix build .#feral-zmk                 # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
+nix build .#feral-zmk-connectpro      # Build Feral ConnectPro split keyboard/consumer USB HID firmware
 nix build .#feral-zmk-diag-col2row    # Build Feral bring-up firmware (C2R)
 nix build .#feral-raw-scan            # Build standalone Feral raw GPIO scan app (USB serial bitmasks)
 ```

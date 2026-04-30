@@ -1,0 +1,446 @@
+--- a/zmk/app/Kconfig
++++ b/zmk/app/Kconfig
+@@ -141,5 +141,18 @@ config USB_HID_POLL_INTERVAL_MS
+     default 1
+ 
++config ZMK_USB_KEYBOARD_HID_DEVICE
++    string "USB HID device for keyboard reports"
++    default "HID_0"
++
++config ZMK_USB_CONSUMER_HID_DEVICE
++    string "USB HID device for consumer reports"
++    default "HID_0"
++
++config ZMK_USB_MOUSE_HID_DEVICE
++    string "USB HID device for mouse reports"
++    default "HID_0"
++    depends on ZMK_POINTING
++
+ endif # ZMK_USB
+ 
+ menuconfig ZMK_BLE
+--- a/zmk/app/include/zmk/hid.h
++++ b/zmk/app/include/zmk/hid.h
+@@ -261,6 +261,162 @@ static const uint8_t zmk_hid_report_desc[] = {
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+ };
+ 
++static const uint8_t zmk_hid_keyboard_report_desc[] = {
++    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
++    HID_USAGE(HID_USAGE_GD_KEYBOARD),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++    HID_USAGE_MIN8(HID_USAGE_KEY_KEYBOARD_LEFTCONTROL),
++    HID_USAGE_MAX8(HID_USAGE_KEY_KEYBOARD_RIGHT_GUI),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x08),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++    HID_REPORT_SIZE(0x08),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++    HID_USAGE_PAGE(HID_USAGE_LED),
++    HID_USAGE_MIN8(HID_USAGE_LED_NUM_LOCK),
++    HID_USAGE_MAX8(HID_USAGE_LED_KANA),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x05),
++    HID_OUTPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++    HID_USAGE_PAGE(HID_USAGE_LED),
++    HID_REPORT_SIZE(0x03),
++    HID_REPORT_COUNT(0x01),
++    HID_OUTPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++
++#endif // IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++
++    HID_USAGE_PAGE(HID_USAGE_KEY),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_NKRO)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(ZMK_HID_KEYBOARD_NKRO_MAX_USAGE + 1),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#elif IS_ENABLED(CONFIG_ZMK_HID_REPORT_TYPE_HKRO)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x00),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(0xFF),
++    HID_REPORT_SIZE(0x08),
++    HID_REPORT_COUNT(CONFIG_ZMK_HID_KEYBOARD_REPORT_SIZE),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
++#else
++#error "A proper HID report type must be selected"
++#endif
++
++    HID_END_COLLECTION,
++};
++
++static const uint8_t zmk_hid_consumer_report_desc[] = {
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++    HID_USAGE(HID_USAGE_CONSUMER_CONSUMER_CONTROL),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_CONSUMER),
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++
++#if IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_BASIC)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x00),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX8(0xFF),
++    HID_REPORT_SIZE(0x08),
++#elif IS_ENABLED(CONFIG_ZMK_HID_CONSUMER_REPORT_USAGES_FULL)
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX16(0xFF, 0x0F),
++    HID_USAGE_MIN8(0x00),
++    HID_USAGE_MAX16(0xFF, 0x0F),
++    HID_REPORT_SIZE(0x10),
++#else
++#error "A proper consumer HID report usage range must be selected"
++#endif
++    HID_REPORT_COUNT(CONFIG_ZMK_HID_CONSUMER_REPORT_SIZE),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_ARRAY | ZMK_HID_MAIN_VAL_ABS),
++    HID_END_COLLECTION,
++};
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++static const uint8_t zmk_hid_mouse_report_desc[] = {
++    HID_USAGE_PAGE(HID_USAGE_GD),
++    HID_USAGE(HID_USAGE_GD_MOUSE),
++    HID_COLLECTION(HID_COLLECTION_APPLICATION),
++    HID_REPORT_ID(ZMK_HID_REPORT_ID_MOUSE),
++    HID_USAGE(HID_USAGE_GD_POINTER),
++    HID_COLLECTION(HID_COLLECTION_PHYSICAL),
++    HID_USAGE_PAGE(HID_USAGE_BUTTON),
++    HID_USAGE_MIN8(0x1),
++    HID_USAGE_MAX8(ZMK_HID_MOUSE_NUM_BUTTONS),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x01),
++    HID_REPORT_SIZE(0x01),
++    HID_REPORT_COUNT(0x5),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++    HID_REPORT_SIZE(0x03),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_CONST | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++    HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),
++    HID_USAGE(HID_USAGE_GD_X),
++    HID_USAGE(HID_USAGE_GD_Y),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x02),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_COLLECTION(HID_COLLECTION_LOGICAL),
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
++    HID_LOGICAL_MIN8(0x00),
++    HID_LOGICAL_MAX8(0x0F),
++    HID_PHYSICAL_MIN8(0x01),
++    HID_PHYSICAL_MAX8(0x10),
++    HID_REPORT_SIZE(0x04),
++    HID_REPORT_COUNT(0x01),
++    HID_PUSH,
++    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_WHEEL),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_PHYSICAL_MIN8(0x00),
++    HID_PHYSICAL_MAX8(0x00),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_END_COLLECTION,
++    HID_COLLECTION(HID_COLLECTION_LOGICAL),
++#if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE(HID_USAGE_GD_RESOLUTION_MULTIPLIER),
++    HID_POP,
++    HID_FEATURE(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_ABS),
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
++    HID_USAGE_PAGE(HID_USAGE_CONSUMER),
++    HID_USAGE16_SINGLE(HID_USAGE_CONSUMER_AC_PAN),
++    HID_LOGICAL_MIN16(0x00, 0x80),
++    HID_LOGICAL_MAX16(0xFF, 0x7F),
++    HID_PHYSICAL_MIN8(0x00),
++    HID_PHYSICAL_MAX8(0x00),
++    HID_REPORT_SIZE(0x10),
++    HID_REPORT_COUNT(0x01),
++    HID_INPUT(ZMK_HID_MAIN_VAL_DATA | ZMK_HID_MAIN_VAL_VAR | ZMK_HID_MAIN_VAL_REL),
++    HID_END_COLLECTION,
++    HID_END_COLLECTION,
++    HID_END_COLLECTION,
++};
++#endif // IS_ENABLED(CONFIG_ZMK_POINTING)
++
+ #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+ 
+ #define HID_ERROR_ROLLOVER 0x1
+--- a/zmk/app/src/usb_hid.c
++++ b/zmk/app/src/usb_hid.c
+@@ -5,6 +5,8 @@
+ 
+ #include <zephyr/device.h>
+ #include <zephyr/init.h>
++#include <string.h>
++#include <stdbool.h>
+ 
+ #include <zephyr/usb/usb_device.h>
+ #include <zephyr/usb/class/usb_hid.h>
+@@ -26,11 +28,38 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+ 
+ #include <zmk/event_manager.h>
+ 
+-static const struct device *hid_dev;
++static const struct device *keyboard_hid_dev;
++static const struct device *consumer_hid_dev;
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++static const struct device *mouse_hid_dev;
++#endif
++static bool keyboard_hid_is_dedicated;
++static bool consumer_hid_is_dedicated;
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++static bool mouse_hid_is_dedicated;
++#endif
+ 
+-static K_SEM_DEFINE(hid_sem, 1, 1);
++static K_SEM_DEFINE(keyboard_hid_sem, 1, 1);
++static K_SEM_DEFINE(consumer_hid_sem, 1, 1);
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++static K_SEM_DEFINE(mouse_hid_sem, 1, 1);
++#endif
+ 
+-static void in_ready_cb(const struct device *dev) { k_sem_give(&hid_sem); }
++static void in_ready_cb(const struct device *dev) {
++    if (dev == keyboard_hid_dev) {
++        k_sem_give(&keyboard_hid_sem);
++    }
++
++    if (consumer_hid_is_dedicated && dev == consumer_hid_dev) {
++        k_sem_give(&consumer_hid_sem);
++    }
++
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    if (mouse_hid_is_dedicated && dev == mouse_hid_dev) {
++        k_sem_give(&mouse_hid_sem);
++    }
++#endif
++}
+ 
+ #define HID_GET_REPORT_TYPE_MASK 0xff00
+ #define HID_GET_REPORT_ID_MASK 0x00ff
+@@ -55,8 +73,13 @@ static uint8_t *get_keyboard_report(size_t *len) {
+     }
+ #endif
+     struct zmk_hid_keyboard_report *report = zmk_hid_get_keyboard_report();
+-    *len = sizeof(*report);
+-    return (uint8_t *)report;
++    if (keyboard_hid_is_dedicated) {
++        *len = sizeof(report->body);
++        return (uint8_t *)&report->body;
++    } else {
++        *len = sizeof(*report);
++        return (uint8_t *)report;
++    }
+ }
+ 
+ static int get_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
+@@ -64,5 +87,8 @@ static int get_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
+ #if IS_ENABLED(CONFIG_ZMK_POINTING_SMOOTH_SCROLLING)
+         case ZMK_HID_REPORT_ID_MOUSE:
++            if (mouse_hid_is_dedicated && dev != mouse_hid_dev) {
++                return -EINVAL;
++            }
+             static struct zmk_hid_mouse_resolution_feature_report res_feature_report;
+ 
+             struct zmk_endpoint_instance endpoint = {
+@@ -72,6 +95,14 @@ static int get_report_cb(const struct device *dev, struct usb_setup_packet *setu
+         break;
+     case HID_REPORT_TYPE_INPUT:
+         switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
++        case 0:
++            if (!keyboard_hid_is_dedicated || dev != keyboard_hid_dev) {
++                return -EINVAL;
++            }
++            size_t size;
++            *data = get_keyboard_report(&size);
++            *len = (int32_t)size;
++            break;
+         case ZMK_HID_REPORT_ID_KEYBOARD: {
+             size_t size;
+             *data = get_keyboard_report(&size);
+@@ -80,6 +110,9 @@ static int get_report_cb(const struct device *dev, struct usb_setup_packet *setu
+             break;
+         }
+         case ZMK_HID_REPORT_ID_CONSUMER: {
++            if (consumer_hid_is_dedicated && dev != consumer_hid_dev) {
++                return -EINVAL;
++            }
+             struct zmk_hid_consumer_report *report = zmk_hid_get_consumer_report();
+             *data = (uint8_t *)report;
+             *len = sizeof(*report);
+@@ -127,6 +160,23 @@ static int set_report_cb(const struct device *dev, struct usb_setup_packet *setup, int32_t *len,
+     case HID_REPORT_TYPE_OUTPUT:
+         switch (setup->wValue & HID_GET_REPORT_ID_MASK) {
+ #if IS_ENABLED(CONFIG_ZMK_HID_INDICATORS)
++        case 0: {
++            if (!keyboard_hid_is_dedicated || dev != keyboard_hid_dev) {
++                return -EINVAL;
++            }
++            if (*len != sizeof(struct zmk_hid_led_report_body)) {
++                LOG_ERR("LED set report is malformed: length=%d", *len);
++                return -EINVAL;
++            }
++
++            struct zmk_hid_led_report_body *body =
++                (struct zmk_hid_led_report_body *)*data;
++            struct zmk_endpoint_instance endpoint = {
++                .transport = ZMK_TRANSPORT_USB,
++            };
++            zmk_hid_indicators_process_report(body, endpoint);
++            break;
++        }
+         case ZMK_HID_REPORT_ID_LEDS:
+             if (*len != sizeof(struct zmk_hid_led_report)) {
+                 LOG_ERR("LED set report is malformed: length=%d", *len);
+@@ -166,7 +219,8 @@ static const struct hid_ops ops = {
+     .set_report = set_report_cb,
+ };
+ 
+-static int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
++static int zmk_usb_hid_send_report(const struct device *dev, struct k_sem *sem,
++                                   const uint8_t *report, size_t len) {
+     switch (zmk_usb_get_status()) {
+     case USB_DC_SUSPEND:
+         return usb_wakeup_request();
+@@ -178,11 +232,11 @@ static int zmk_usb_hid_send_report(const uint8_t *report, size_t len) {
+     case USB_DC_UNKNOWN:
+         return -ENODEV;
+     default:
+-        k_sem_take(&hid_sem, K_MSEC(30));
+-        int err = hid_int_ep_write(hid_dev, report, len, NULL);
++        k_sem_take(sem, K_MSEC(30));
++        int err = hid_int_ep_write(dev, report, len, NULL);
+ 
+         if (err) {
+-            k_sem_give(&hid_sem);
++            k_sem_give(sem);
+         }
+ 
+         return err;
+@@ -193,6 +247,6 @@ int zmk_usb_hid_send_keyboard_report(void) {
+     size_t len;
+     uint8_t *report = get_keyboard_report(&len);
+-    return zmk_usb_hid_send_report(report, len);
++    return zmk_usb_hid_send_report(keyboard_hid_dev, &keyboard_hid_sem, report, len);
+ }
+ 
+ int zmk_usb_hid_send_consumer_report(void) {
+@@ -203,11 +257,12 @@ int zmk_usb_hid_send_keyboard_report(void) {
+ int zmk_usb_hid_send_consumer_report(void) {
+ #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-    if (hid_protocol == HID_PROTOCOL_BOOT) {
++    if (!consumer_hid_is_dedicated && hid_protocol == HID_PROTOCOL_BOOT) {
+         return -ENOTSUP;
+     }
+ #endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
+ 
+     struct zmk_hid_consumer_report *report = zmk_hid_get_consumer_report();
+-    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
++    struct k_sem *sem = consumer_hid_is_dedicated ? &consumer_hid_sem : &keyboard_hid_sem;
++    return zmk_usb_hid_send_report(consumer_hid_dev, sem, (uint8_t *)report, sizeof(*report));
+ }
+ 
+@@ -223,7 +278,9 @@ int zmk_usb_hid_send_mouse_report() {
+ #endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
+ 
+     struct zmk_hid_mouse_report *report = zmk_hid_get_mouse_report();
+-    return zmk_usb_hid_send_report((uint8_t *)report, sizeof(*report));
++    const struct device *dev = mouse_hid_is_dedicated ? mouse_hid_dev : keyboard_hid_dev;
++    struct k_sem *sem = mouse_hid_is_dedicated ? &mouse_hid_sem : &keyboard_hid_sem;
++    return zmk_usb_hid_send_report(dev, sem, (uint8_t *)report, sizeof(*report));
+ }
+ #endif // IS_ENABLED(CONFIG_ZMK_POINTING)
+ 
+@@ -238,17 +295,67 @@ int zmk_usb_hid_send_mouse_report() {
+ static int zmk_usb_hid_init(void) {
+-    hid_dev = device_get_binding("HID_0");
+-    if (hid_dev == NULL) {
+-        LOG_ERR("Unable to locate HID device");
++    consumer_hid_is_dedicated = strcmp(CONFIG_ZMK_USB_KEYBOARD_HID_DEVICE,
++                                       CONFIG_ZMK_USB_CONSUMER_HID_DEVICE) != 0;
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    mouse_hid_is_dedicated =
++        strcmp(CONFIG_ZMK_USB_KEYBOARD_HID_DEVICE, CONFIG_ZMK_USB_MOUSE_HID_DEVICE) != 0;
++    keyboard_hid_is_dedicated = consumer_hid_is_dedicated || mouse_hid_is_dedicated;
++#else
++    keyboard_hid_is_dedicated = consumer_hid_is_dedicated;
++#endif
++    if (keyboard_hid_is_dedicated && !consumer_hid_is_dedicated) {
++        LOG_ERR("Split USB HID devices require consumer reports to use a dedicated HID device");
++        return -ENOTSUP;
++    }
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    if (keyboard_hid_is_dedicated && !mouse_hid_is_dedicated) {
++        LOG_ERR("Split USB HID devices require mouse reports to use a dedicated HID device");
++        return -ENOTSUP;
++    }
++#endif
++
++    keyboard_hid_dev = device_get_binding(CONFIG_ZMK_USB_KEYBOARD_HID_DEVICE);
++    consumer_hid_dev = device_get_binding(CONFIG_ZMK_USB_CONSUMER_HID_DEVICE);
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    mouse_hid_dev = device_get_binding(CONFIG_ZMK_USB_MOUSE_HID_DEVICE);
++#endif
++    if (keyboard_hid_dev == NULL || consumer_hid_dev == NULL
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++        || mouse_hid_dev == NULL
++#endif
++    ) {
++        LOG_ERR("Unable to locate HID devices");
+         return -EINVAL;
+     }
+ 
+-    usb_hid_register_device(hid_dev, zmk_hid_report_desc, sizeof(zmk_hid_report_desc), &ops);
++    if (keyboard_hid_is_dedicated) {
++        usb_hid_register_device(keyboard_hid_dev, zmk_hid_keyboard_report_desc,
++                                sizeof(zmk_hid_keyboard_report_desc), &ops);
++        usb_hid_register_device(consumer_hid_dev, zmk_hid_consumer_report_desc,
++                                sizeof(zmk_hid_consumer_report_desc), &ops);
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++        if (mouse_hid_is_dedicated) {
++            usb_hid_register_device(mouse_hid_dev, zmk_hid_mouse_report_desc,
++                                    sizeof(zmk_hid_mouse_report_desc), &ops);
++        }
++#endif
++    } else {
++        usb_hid_register_device(keyboard_hid_dev, zmk_hid_report_desc, sizeof(zmk_hid_report_desc),
++                                &ops);
++    }
+ 
+ #if IS_ENABLED(CONFIG_ZMK_USB_BOOT)
+-    usb_hid_set_proto_code(hid_dev, HID_BOOT_IFACE_CODE_KEYBOARD);
++    usb_hid_set_proto_code(keyboard_hid_dev, HID_BOOT_IFACE_CODE_KEYBOARD);
+ #endif /* IS_ENABLED(CONFIG_ZMK_USB_BOOT) */
+ 
+-    usb_hid_init(hid_dev);
++    usb_hid_init(keyboard_hid_dev);
++    if (consumer_hid_is_dedicated) {
++        usb_hid_init(consumer_hid_dev);
++    }
++#if IS_ENABLED(CONFIG_ZMK_POINTING)
++    if (mouse_hid_is_dedicated) {
++        usb_hid_init(mouse_hid_dev);
++    }
++#endif
+ 
+     return 0;
+ }
