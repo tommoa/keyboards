@@ -408,11 +408,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777165717,
-        "narHash": "sha256-CrAOH5F85oOJWqWXby/C8PjkMm8QsyeGR2bo0loQ7io=",
+        "lastModified": 1777770835,
+        "narHash": "sha256-GO1nX6HVu4PI/fFSn8sMy5ge4G0rhJDwJ9Sb/TUvG9A=",
         "owner": "lilyinstarlight",
         "repo": "zmk-nix",
-        "rev": "2790a1fadba89df6e7a5a69a790889688bc2ba7e",
+        "rev": "32c5953e4a03d103d6d11ae4de3b3fe0b9d11a7a",
         "type": "github"
       },
       "original": {
