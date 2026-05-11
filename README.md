@@ -26,10 +26,12 @@ hotkey parsing only worked reliably when the keyboard report was exposed
 as a dedicated boot-keyboard HID interface.
 
 The `feral-zmk-connectpro` target is the UDP-12AP-compatible firmware. It
-patches ZMK locally so USB exposes a report-ID-free keyboard HID descriptor
+builds against the `tommoa/zmk` `usb-hid-device-indexes` branch from
+zmkfirmware/zmk#3345 so USB exposes a report-ID-free keyboard HID descriptor
 on `HID_0` and consumer/media reports on `HID_1`. This keeps media keys
-available while giving the KVM a plain keyboard interface to parse. The
-normal `feral-zmk` target is intentionally unpatched.
+available while giving the KVM a plain keyboard interface to parse. This
+tracks the upstream split-HID support request in
+https://github.com/zmkfirmware/zmk/issues/3339.
 
 The relevant HID 1.11 details are:
 

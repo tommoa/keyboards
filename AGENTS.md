@@ -263,9 +263,9 @@ Conventional Commits format: `type(scope): description`
 - The normal split Feral firmware builds as `feral-zmk-left` and
   `feral-zmk-right`. The left half is the ZMK split central and the
   right half is the peripheral.
-- `feral-zmk-connectpro` is the UDP-12AP DDM-compatible Feral firmware
-  target. Keep the normal `feral-zmk` target unpatched. The relevant HID
-  topology and testing results are documented in `README.md`.
+- `feral-zmk-connectpro` is the UDP-12AP DDM-compatible Feral firmware.
+  It temporarily builds from `tommoa/zmk` for split HID indexes and opts
+  into them via `connectpro.conf`.
 
 ## Architecture notes
 

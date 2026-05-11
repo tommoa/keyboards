@@ -166,27 +166,19 @@
           };
         };
 
-        feral-zmk-connectpro-west-deps =
-          pkgs.runCommand "feral-zmk-connectpro-west-deps" { } ''
-            cp --no-preserve=mode -R ${feral-zmk.westDeps} $out
-            chmod -R u+w $out
-            patch -d $out -p1 < ${./nix/patches/zmk-connectpro-split-hid.patch}
-          ''
-          // {
-            inherit (feral-zmk.westDeps) westRoot;
-          };
-
         feral-zmk-connectpro = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
           name = "feral-zmk-connectpro";
           src = feral-zmk-src;
-          westDeps = feral-zmk-connectpro-west-deps;
           board = "xiao_ble//zmk";
           shield = "feral_%PART%";
-          config = "feral/config";
-          zephyrDepsHash = "sha256-AckaKQrasDg4T3c+Wf/VURpQ8dYlIWVR5eAqmx9iaf4=";
+          config = "feral/connectpro";
+          zephyrDepsHash = "sha256-ChFP0XBgqXk/gVPNiy13qP9aWw9hSyJPvhRBEl0hu3s=";
           extraCmakeFlags = [
             "-DZMK_EXTRA_MODULES=${./feral/startup-led}"
+            "-DBOARD_ROOT=${./zmk/feral/config}"
+            "-DCONF_FILE=${./zmk/feral/config/feral.conf}"
             "-DEXTRA_CONF_FILE=${./zmk/feral/config/connectpro.conf}"
+            "-DKEYMAP_FILE=${./zmk/feral/config/feral.keymap}"
           ];
           meta = {
             description = "Feral ZMK firmware with ConnectPro split USB HID";

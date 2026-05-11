@@ -1,0 +1,36 @@
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: tommoa
+      url-base: https://github.com/tommoa
+  projects:
+    - name: zmk
+      remote: tommoa
+      revision: 1f78a0fe71a2eb3a0e0911a92070bb7a6f271c1b # usb-hid-device-indexes, zmkfirmware/zmk#3345
+      import: app/west.yml
+    - name: zephyr
+      remote: zmkfirmware
+      revision: ec36516990d40355238db3049bc1709191f99b4e # v4.1.0+zmk-fixes
+      import:
+        name-blocklist:
+          - ci-tools
+          - hal_altera
+          - hal_cypress
+          - hal_infineon
+          - hal_microchip
+          - hal_nxp
+          - hal_openisa
+          - hal_silabs
+          - hal_xtensa
+          - hal_st
+          - hal_ti
+          - loramac-node
+          - mcuboot
+          - mcumgr
+          - net-tools
+          - openthread
+          - edtt
+          - trusted-firmware-m
+  self:
+    path: feral/connectpro
