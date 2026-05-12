@@ -6,7 +6,7 @@ This flow validates matrix wiring for the Feral PCB using the intended
 ## Build
 
 ```sh
-nix build .#feral-zmk-diag-col2row
+nix build .#feral-diag-col2row-zmk
 ```
 
 ## Flash

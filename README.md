@@ -25,7 +25,7 @@ selective in testing: keyboard typing worked through the KVM, but DDM
 hotkey parsing only worked reliably when the keyboard report was exposed
 as a dedicated boot-keyboard HID interface.
 
-The `feral-zmk-connectpro` target is the UDP-12AP-compatible firmware. It
+The `feral-connectpro-zmk` target is the UDP-12AP-compatible firmware. It
 builds against the `tommoa/zmk` `usb-hid-device-indexes` branch from
 zmkfirmware/zmk#3345 so USB exposes a report-ID-free keyboard HID descriptor
 on `HID_0` and consumer/media reports on `HID_1`. This keeps media keys
@@ -171,8 +171,8 @@ Flake outputs follow the naming convention `<keyboard>-<firmware>`.
 nix build .#preonic-qmk               # Build QMK firmware
 nix build .#preonic-zmk               # Build ZMK firmware
 nix build .#feral-zmk                 # Build Feral split firmware (zmk_left.uf2 + zmk_right.uf2)
-nix build .#feral-zmk-connectpro      # Build Feral ConnectPro split keyboard/consumer USB HID firmware
-nix build .#feral-zmk-diag-col2row    # Build Feral bring-up firmware (C2R)
+nix build .#feral-connectpro-zmk      # Build Feral ConnectPro split keyboard/consumer USB HID firmware
+nix build .#feral-diag-col2row-zmk    # Build Feral bring-up firmware (C2R)
 nix build .#feral-raw-scan            # Build standalone Feral raw GPIO scan app (USB serial bitmasks)
 ```
 

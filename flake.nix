@@ -166,8 +166,8 @@
           };
         };
 
-        feral-zmk-connectpro = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
-          name = "feral-zmk-connectpro";
+        feral-connectpro-zmk-args = {
+          name = "feral-connectpro-zmk";
           src = feral-zmk-src;
           board = "xiao_ble//zmk";
           shield = "feral_%PART%";
@@ -187,8 +187,26 @@
           };
         };
 
-        feral-zmk-diag-col2row = zmk-nix.legacyPackages.${system}.buildKeyboard {
-          name = "feral-zmk-diag-col2row";
+        feral-connectpro-zmk-west-deps =
+          (zmk-nix.legacyPackages.${system}.buildKeyboard feral-connectpro-zmk-args).westDeps.overrideAttrs
+            (old: {
+              postInstall = (old.postInstall or "") + ''
+                substituteInPlace $out/zmk/app/boards/shields/nice_view/Kconfig.defconfig \
+                  --replace-fail "config LS0XX_VCOM_THREAD_PRIO" "# config LS0XX_VCOM_THREAD_PRIO" \
+                  --replace-fail "    default 11" "# default 11"
+              '';
+              outputHash = "sha256-/6PjiOs4KgeCJPZqp3TOLnOkkNBgnT7hcg5U6OEqBwQ=";
+            });
+
+        feral-connectpro-zmk = zmk-nix.legacyPackages.${system}.buildSplitKeyboard (
+          feral-connectpro-zmk-args
+          // {
+            westDeps = feral-connectpro-zmk-west-deps;
+          }
+        );
+
+        feral-diag-col2row-zmk = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-diag-col2row-zmk";
           src = feral-zmk-src;
           board = "xiao_ble//zmk";
           shield = "feral_diag";
@@ -204,8 +222,8 @@
           };
         };
 
-        feral-zmk-split-reset = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
-          name = "feral-zmk-split-reset";
+        feral-split-reset-zmk = zmk-nix.legacyPackages.${system}.buildSplitKeyboard {
+          name = "feral-split-reset-zmk";
           src = feral-zmk-src;
           board = "xiao_ble//zmk";
           shield = "feral_split_reset_%PART%";
@@ -221,8 +239,8 @@
           };
         };
 
-        feral-zmk-settings-reset = zmk-nix.legacyPackages.${system}.buildKeyboard {
-          name = "feral-zmk-settings-reset";
+        feral-settings-reset-zmk = zmk-nix.legacyPackages.${system}.buildKeyboard {
+          name = "feral-settings-reset-zmk";
           src = feral-zmk-src;
           board = "xiao_ble//zmk";
           shield = "settings_reset";
@@ -369,10 +387,10 @@
         packages.preonic-zmk = preonic-zmk;
         packages.vortex-core-qmk = vortex-core-qmk;
         packages.feral-zmk = feral-zmk;
-        packages.feral-zmk-connectpro = feral-zmk-connectpro;
-        packages.feral-zmk-diag-col2row = feral-zmk-diag-col2row;
-        packages.feral-zmk-split-reset = feral-zmk-split-reset;
-        packages.feral-zmk-settings-reset = feral-zmk-settings-reset;
+        packages.feral-connectpro-zmk = feral-connectpro-zmk;
+        packages.feral-diag-col2row-zmk = feral-diag-col2row-zmk;
+        packages.feral-split-reset-zmk = feral-split-reset-zmk;
+        packages.feral-settings-reset-zmk = feral-settings-reset-zmk;
         packages.feral-raw-scan = feral-raw-scan;
         packages.feral-keymap-assets = feral-keymap-assets;
         packages.feral-pcb = feral.packages.${system}.default;
